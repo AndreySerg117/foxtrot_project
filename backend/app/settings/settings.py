@@ -6,6 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#$n@$u-is^fo%5=q_al9c3jxo=p*$l+xr7pgx#3z6d05@%aeuf'
 
 DEBUG = True
+AUTH_USER_MODEL = "users.User"
 
 ALLOWED_HOSTS = []
 
@@ -17,6 +18,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    "apps.users",
 ]
 
 MIDDLEWARE = [
@@ -29,7 +32,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'app.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -46,7 +49,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'app.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 
 DATABASES = {
