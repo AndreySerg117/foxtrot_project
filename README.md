@@ -15,7 +15,7 @@ uv run django-admin startproject app
 uv run python manage.py runserver
 
 # migrate
-uv run python manage.py startapp users
-uv run python manage.py makemigrations
-uv run python manage.py migrate
+uv run python manage.py startapp users 
+uv run python manage.py makemigrations 
+uv run python manage.py migrate 
 uv run python manage.py createsuperuser
