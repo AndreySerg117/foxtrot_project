@@ -1,0 +1,24 @@
+services:
+  backend:
+    container_name: backend_foxtrot
+    hostname: backend_foxtrot
+    ports:
+      - "8000:8000"
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    restart: always
+    command: |
+      sh -c "
+      uv run python manage.py runserver 0.0.0.0:8000
+      "
+    volumes:
+      - ./backend/app:/app
+    networks:
+      - main_network
+    env_file:
+      - .env
+
+networks:
+  main_network:
+    driver: bridge
