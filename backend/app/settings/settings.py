@@ -1,5 +1,6 @@
 from decouple import config, Csv
 from pathlib import Path
+from settings.settings_storages import *
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,6 +18,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    "storages",
 
     "apps.users",
 ]
@@ -90,3 +93,5 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
