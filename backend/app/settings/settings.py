@@ -11,6 +11,8 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
 
 AUTH_USER_MODEL = "users.User"
 
+LOGIN_URL = '/users/login'
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
