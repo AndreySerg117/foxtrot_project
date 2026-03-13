@@ -11,9 +11,14 @@
       <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
       <span class="sr-only">Search</span>
     </button>
-    <a href="{% url 'signup' %}" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-1.5 focus:outline-none">
-    Sign Up
-</a>
+
+      {% if user.is_authenticated %}
+    <a href="{% url 'logout' %}" type="button" class="text-white bg-green-600 hover:bg-green-700 box-border border border-transparent focus:ring-4 focus:ring-green-300 shadow-xs font-medium leading-5 rounded-lg text-xs px-3 py-1.5 focus:outline-none me-2">{{user}}, logout</a>
+    {% else %}
+    <a href="{% url 'login' %}" type="button" class="text-white bg-blue-600 hover:bg-blue-700 box-border border border-transparent focus:ring-4 focus:ring-blue-300 shadow-xs font-medium leading-5 rounded-lg text-xs px-3 py-1.5 focus:outline-none me-2">Login</a>
+    <a href="{% url 'signup' %}" class="text-white bg-blue-600 hover:bg-blue-700 box-border border border-transparent focus:ring-4 focus:ring-blue-300 shadow-xs font-medium leading-5 rounded-lg text-xs px-3 py-1.5 focus:outline-none me-2">Sign Up</a>
+{% endif %}
+
     <label for="input-group-1" class="sr-only">Your Email</label>
     <div class="relative hidden md:block">
       <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
