@@ -1,6 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1 class="text-4xl font-bold text-center text-blue-600 mt-10">{{ data }}</h1>
-<p>{{ reaction }}</p>
+
+<div class="mt-10 p-6">
+  <ul class="max-w-md divide-y divide-default">
+
+    {% for shop in shops %}
+    <li class="pb-3 sm:pb-4">
+      <div class="flex items-center space-x-4 rtl:space-x-reverse">
+
+        <div class="shrink-0">
+          {% if shop.poster %}
+            <img class="w-8 h-8 rounded-full object-cover" src="{{ shop.poster.url }}" alt="{{ shop.title }}">
+          {% else %}
+            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm">
+              {{ shop.title|first }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-heading truncate">
+            {{ shop.title }}
+          </p>
+          <p class="text-sm text-body truncate">
+            Продавці:
+            {% for seller in shop.sellers.all %}
+              {{ seller.first_name }} {{ seller.last_name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+              немає
+            {% endfor %}
+          </p>
+        </div>
+
+      </div>
+    </li>
+    {% empty %}
+      <p class="text-body">Магазинів немає</p>
+    {% endfor %}
+
+  </ul>
+</div>
+
 {% endblock %}

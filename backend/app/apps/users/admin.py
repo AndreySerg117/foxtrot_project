@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
+from apps.users.models import Shop
 
 User = get_user_model()
 
@@ -26,4 +27,26 @@ class CustomUserAdmin(UserAdmin):
         return "-"
 
     photo_preview.short_description = "Photo Preview"
+
+
+class SellerInline(admin.TabularInline):
+    model = User
+    fk_name = "shop"
+    extra = 1
+    fields = ("username", "last_name", "patronymic")
+    verbose_name = "Продавець"
+    verbose_name_plural = "Продавці"
+
+
+@admin.register(Shop)
+class ShopAdmin(admin.ModelAdmin):
+    list_display = ("id", "title", "user_count")
+    search_fields = ("title",)
+    inlines = [SellerInline]
+
+    def user_count(self, obj):
+        return obj.sellers.count()
+
+    user_count.short_description = "Кількість продавців"
+
 
