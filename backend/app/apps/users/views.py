@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect
 from apps.users.forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from apps.users.models import User, Shop
 import logging
 
 
 @login_required(login_url='/users/login')
 def index(request):
-    return render(request, "index.html", context={"data": 123})
+    shops = Shop.objects.prefetch_related("sellers").all()
+    return render(request, "index.html", context={"shops": shops})
 
 
 logger = logging.Logger(__name__)
