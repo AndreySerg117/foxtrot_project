@@ -40,7 +40,7 @@ class SellerInline(admin.TabularInline):
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "user_count")
+    list_display = ("id", "title", "user_count", "description")
     search_fields = ("title",)
     inlines = [SellerInline]
 
