@@ -73,6 +73,10 @@ def logout_view(request):
     return redirect('index')
 
 
+def crud_users(request):
+    return render(request, 'crud_users.html', context={})
+
+
 class ShopDetailView(DetailView):
     model = Shop
     template_name = "shop_detail.html"
