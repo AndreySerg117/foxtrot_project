@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from apps.users.forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -74,7 +74,44 @@ def logout_view(request):
 
 
 def crud_users(request):
-    return render(request, 'crud_users.html', context={})
+    users = User.objects.all()
+    return render(request, 'crud_users.html', context={'users': users})
+
+
+def user_create(request):
+    if request.method == 'POST':
+        User.objects.create_user(
+            username=request.POST.get('username'),
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name'),
+            patronymic=request.POST.get('patronymic'),
+            document_in_passport=request.POST.get('document_in_passport'),
+            nn_in_passport=request.POST.get('nn_in_passport'),
+            password=request.POST.get('password'),
+        )
+        return redirect('crud_users')
+    return render(request, 'user_create.html', {})
+
+
+def user_edit(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.patronymic = request.POST.get('patronymic')
+        user.document_in_passport = request.POST.get('document_in_passport')
+        user.nn_in_passport = request.POST.get('nn_in_passport')
+        user.save()
+        return redirect('crud_users')
+    return render(request, 'user_edit.html', {'user_obj': user})
+
+
+def user_delete(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('crud_users')
+    return render(request, 'user_delete.html', {'user_obj': user})
 
 
 class ShopDetailView(DetailView):
