@@ -1,4 +1,65 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<div class="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 py-12 px-4">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="flex justify-between items-center mb-3">
+       <a href="{% url 'index' %}" class="inline-flex items-center text-gray-400 hover:text-white transition-colors mb-1 group">
+         <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+         </svg>
+         До головної
+       </a>
+      <h2 class="text-2xl font-bold text-gray-400">Промоутери</h2>
+      <a href="{% url 'user_create' %}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-full transition-colors">
+        + Додати
+      </a>
+    </div>
+
+    <div class="bg-gray-800/50 rounded-2xl border border-gray-700/50 overflow-x-auto">
+      <table class="w-full text-sm text-left text-gray-300">
+        <thead class="text-xs uppercase bg-gray-700/50 text-gray-400">
+          <tr>
+            <th class="px-4 py-3">ID</th>
+            <th class="px-4 py-3">Username</th>
+            <th class="px-4 py-3">Ім'я</th>
+            <th class="px-4 py-3">Прізвище</th>
+            <th class="px-4 py-3">По батькові</th>
+            <th class="px-4 py-3">Документ</th>
+            <th class="px-4 py-3">НН</th>
+            <th class="px-4 py-3">Магазин</th>
+            <th class="px-4 py-3">Дії</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700/50">
+          {% for u in users %}
+          <tr class="hover:bg-gray-700/30 transition-colors">
+            <td class="px-4 py-3 text-gray-500">{{ u.pk }}</td>
+            <td class="px-4 py-3">{{ u.username }}</td>
+            <td class="px-4 py-3">{{ u.first_name }}</td>
+            <td class="px-4 py-3">{{ u.last_name }}</td>
+            <td class="px-4 py-3">{{ u.patronymic }}</td>
+            <td class="px-4 py-3">{{ u.document_in_passport }}</td>
+            <td class="px-4 py-3">{{ u.nn_in_passport }}</td>
+            <td class="px-4 py-3">{{ u.shop|default:"—" }}</td>
+            <td class="px-4 py-3">
+              <div class="flex gap-2">
+                <a href="{% url 'user_edit' pk=u.pk %}" class="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors">Редагувати</a>
+                <a href="{% url 'user_delete' pk=u.pk %}" class="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors">Видалити</a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="9" class="px-4 py-6 text-gray-500 text-center">Немає користувачів</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
 {% endblock %}
