@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col items-center justify-center gap-4">
+  <h1 class="text-2xl font-bold text-gray-800">У вас немає доступу до цієї сторінки</h1>
+  <a href="{% url 'index' %}" class="inline-flex items-center text-gray-400 hover:text-white transition-colors group">
+    <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+    </svg>
+    На головну
+  </a>
+</div>
+{% endblock %}

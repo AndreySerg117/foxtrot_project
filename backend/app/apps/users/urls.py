@@ -1,6 +1,6 @@
 from django.urls import path
 from apps.users.views import (signup, login_view, logout_view, index, ShopDetailView, crud_users,
-                              user_create, user_edit, user_delete)
+                              user_create, user_edit, user_delete, user_redirect)
 
 urlpatterns = [
     path("", index, name='index'),
@@ -11,5 +11,6 @@ urlpatterns = [
     path('users/', crud_users, name='crud_users'),
     path('user/create', user_create, name='user_create'),
     path('user/edit/<int:pk>/', user_edit, name='user_edit'),
-    path('user/delete/<int:pk>/', user_delete, name='user_delete')
+    path('user/delete/<int:pk>/', user_delete, name='user_delete'),
+    path('user/redirect/', user_redirect, name='user_redirect')
 ]

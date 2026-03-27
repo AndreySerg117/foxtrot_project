@@ -9,7 +9,6 @@
     <form method="POST">
         {% csrf_token %}
 
-        <!-- Ім'я -->
         <div class="mb-4">
             <label class="block mb-1">Ім'я</label>
             <input type="text" name="first_name"
@@ -17,7 +16,6 @@
                    class="w-full border rounded-lg px-4 py-2">
         </div>
 
-        <!-- Прізвище -->
         <div class="mb-4">
             <label class="block mb-1">Прізвище</label>
             <input type="text" name="last_name"
@@ -25,7 +23,6 @@
                    class="w-full border rounded-lg px-4 py-2">
         </div>
 
-        <!-- По батькові -->
         <div class="mb-4">
             <label class="block mb-1">По батькові</label>
             <input type="text" name="patronymic"
@@ -33,7 +30,6 @@
                    class="w-full border rounded-lg px-4 py-2">
         </div>
 
-        <!-- Документ -->
         <div class="mb-4">
             <label class="block mb-1">Документ</label>
             <input type="text" name="document_in_passport"
@@ -41,12 +37,23 @@
                    class="w-full border rounded-lg px-4 py-2">
         </div>
 
-        <!-- ІНН -->
         <div class="mb-6">
             <label class="block mb-1">ІНН</label>
             <input type="text" name="nn_in_passport"
                    value="{{ user_obj.nn_in_passport }}"
                    class="w-full border rounded-lg px-4 py-2">
+        </div>
+
+        <div class="mb-6">
+    <label class="block mb-1">Магазин</label>
+    <select name="shop" class="w-full border rounded-lg px-4 py-2">
+        <option value="">— Без магазину —</option>
+        {% for shop in shops %}
+            <option value="{{ shop.pk }}" {% if user_obj.shop_id == shop.pk %}selected{% endif %}>
+                {{ shop.title }}
+            </option>
+        {% endfor %}
+    </select>
         </div>
 
         <button type="submit"
