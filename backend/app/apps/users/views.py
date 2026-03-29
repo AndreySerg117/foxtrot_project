@@ -8,11 +8,15 @@ from django.views.generic import DetailView
 from django.db.models import Q, prefetch_related_objects
 from django.views.generic import DetailView
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 @login_required(login_url='/users/login')
 def index(request):
     shops = Shop.objects.prefetch_related("sellers").all()
+    shop_filter = request.GET.get('shop', '').strip()
+    if shop_filter:
+        shops = shops.filter(title__iexact=shop_filter)
     q = request.GET.get('q', "").strip()
     if q:
         shops = shops.filter(
@@ -73,14 +77,17 @@ def logout_view(request):
     return redirect('index')
 
 
+@staff_member_required(login_url='/user/redirect/')
 def crud_users(request):
     users = User.objects.all()
     return render(request, 'crud_users.html', context={'users': users})
 
 
+@staff_member_required(login_url='/user/redirect/')
 def user_create(request):
+    shop = Shop.objects.all()
     if request.method == 'POST':
-        User.objects.create_user(
+        user = User.objects.create_user(
             username=request.POST.get('username'),
             first_name=request.POST.get('first_name'),
             last_name=request.POST.get('last_name'),
@@ -89,29 +96,42 @@ def user_create(request):
             nn_in_passport=request.POST.get('nn_in_passport'),
             password=request.POST.get('password'),
         )
+        shop_id = request.POST.get('shop')
+        if shop_id:
+            user.shop_id = shop_id
+            user.save()
         return redirect('crud_users')
-    return render(request, 'user_create.html', {})
+    return render(request, 'user_create.html', {'shops': shop})
 
 
+@staff_member_required(login_url='/user/redirect/')
 def user_edit(request, pk):
     user = get_object_or_404(User, pk=pk)
+    shops = Shop.objects.all()
     if request.method == 'POST':
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
         user.patronymic = request.POST.get('patronymic')
         user.document_in_passport = request.POST.get('document_in_passport')
         user.nn_in_passport = request.POST.get('nn_in_passport')
+        shop_id = request.POST.get('shop')
+        user.shop_id = shop_id if shop_id else None
         user.save()
         return redirect('crud_users')
-    return render(request, 'user_edit.html', {'user_obj': user})
+    return render(request, 'user_edit.html', {'user_obj': user, 'shops': shops})
 
 
+@staff_member_required(login_url='/user/redirect/')
 def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)
     if request.method == 'POST':
         user.delete()
         return redirect('crud_users')
     return render(request, 'user_delete.html', {'user_obj': user})
+
+
+def user_redirect(request):
+    return render(request, 'user_redirect.html')
 
 
 class ShopDetailView(DetailView):
