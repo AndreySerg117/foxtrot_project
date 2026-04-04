@@ -1,3 +1,5 @@
+import os
+
 from decouple import config, Csv
 from pathlib import Path
 from settings.settings_storages import *
