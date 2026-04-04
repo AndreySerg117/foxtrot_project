@@ -11,7 +11,9 @@
          </svg>
          До головної
        </a>
-      <h2 class="text-2xl font-bold text-gray-400">Промоутери</h2>
+      <h2 class="text-2xl font-bold text-gray-400">Промоутери>
+         {% if current_shop %}Промоутери: {{ current_shop }}{% else %}Промоутери{% endif %}
+      </h2>
       <a href="{% url 'user_create' %}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-full transition-colors">
         + Додати
       </a>

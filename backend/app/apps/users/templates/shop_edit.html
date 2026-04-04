@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow">
+
+    <h2 class="text-2xl font-bold mb-6">Редагування магазина</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-4">
+            <label class="block mb-1">Назва</label>
+            <input type="text" name="title" value="{{ user_obj.title }}"
+                   class="w-full border rounded-lg px-4 py-2">
+        </div>
+
+        <div class="mb-4">
+            <label class="block mb-1">Опис</label>
+            <input type="text" name="description"
+                   value="{{ user_obj.description }}"
+                   class="w-full border rounded-lg px-4 py-2">
+        </div>
+
+        <div class="mb-4">
+            <label class="block mb-1">Фото</label>
+            {% if user_obj.poster %}
+                <img src="{{ user_obj.poster.url }}" class="w-24 h-24 object-cover rounded mb-2">
+            {% endif %}
+            <input type="file" name="poster" accept="image/*"
+                   value="{{ user_obj.poster }}"
+                   class="w-full border rounded-lg px-4 py-2">
+        </div>
+
+        <button type="submit"
+                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+            Зберегти
+        </button>
+
+        <a href="{% url 'crud_shops' %}"
+           class="ml-3 text-gray-600">
+            Назад
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

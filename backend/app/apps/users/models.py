@@ -21,9 +21,9 @@ class User(AbstractUser):
 
 
 class Shop(models.Model):
-    title = models.CharField(max_length=24)
-    poster = models.ImageField(upload_to="albums/posters/%Y/%m/%d/", blank=False, null=True)
-    description = models.CharField(max_length=256, blank=True, null=True)
+    title = models.CharField('Назва', max_length=256)
+    poster = models.ImageField('Фото', upload_to="shops/", blank=False, null=True)
+    description = models.CharField('Опис', max_length=256, blank=True, null=True)
 
     def __str__(self):
         return f"{self.title}"

@@ -2,47 +2,126 @@
 
 {% block content %}
 
-<div class="mt-10 p-6">
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+<div class="shops-page">
 
-    {% for shop in shops %}
-    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-gray-300 transition-colors">
+  <div class="bg-decoration">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="grid-overlay"></div>
+  </div>
 
-      {% if shop.poster %}
-        <img class="w-full h-65 object-cover" src="{{ shop.poster.url }}" alt="{{ shop.title }}">
-      {% else %}
-        <div class="w-full h-65 bg-gray-100 flex items-center justify-center text-5xl text-gray-400">
-          {{ shop.title|first|upper }}
+  <div class="mt-14 px-6 lg:px-10 mb-16 relative z-10">
+
+    <h1 class="text-3xl font-bold text-center mb-8 page-title">
+      Магазини
+    </h1>
+
+    <div class="grid grid-cols-3 gap-8 max-w-4xl mx-auto">
+      {% for shop in shops %}
+      <div class="shop-card group bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden">
+        {% if shop.poster %}
+          <img class="w-full h-48 object-cover group-hover:scale-105 transition duration-300"
+               src="{{ shop.poster.url }}" alt="{{ shop.title }}">
+        {% else %}
+          <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-5xl text-gray-400 font-bold">
+            {{ shop.title|first|upper }}
+          </div>
+        {% endif %}
+
+        <div class="p-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition">
+            {{ shop.title }}
+          </h3>
+          <p class="text-sm text-gray-500 mb-4">
+            <span class="text-gray-700 font-medium">Продавці:</span>
+            {% for seller in shop.sellers.all %}
+              {{ seller.first_name }} {{ seller.last_name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+              немає
+            {% endfor %}
+          </p>
+          <a href="{% url 'shop_detail' pk=shop.pk %}"
+             class="block w-full text-center bg-blue-600 text-white font-medium rounded-full py-2.5 text-sm hover:bg-blue-700 transition duration-300">
+            Детальніше →
+          </a>
         </div>
-      {% endif %}
-
-      <div class="p-4">
-
-        <p class="text-base font-semibold text-gray-900 mb-1">
-          {{ shop.title }}
-        </p>
-
-        <p class="text-sm text-gray-500 mb-4">
-          Продавці:
-          {% for seller in shop.sellers.all %}
-            {{ seller.first_name }} {{ seller.last_name }}{% if not forloop.last %}, {% endif %}
-          {% empty %}
-            немає
-          {% endfor %}
-        </p>
-
-        <a href="{% url 'shop_detail' pk=shop.pk %}"
-           class="block w-full text-center text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-full text-sm px-4 py-2.5 transition-colors">
-          Детальніше →
-        </a>
-
       </div>
+      {% empty %}
+        <p class="text-gray-400 col-span-3 text-center text-base">Магазинів немає</p>
+      {% endfor %}
     </div>
-    {% empty %}
-      <p class="text-gray-400 col-span-3 text-center">Магазинів немає</p>
-    {% endfor %}
-
   </div>
 </div>
+
+<style>
+  .shops-page {
+    min-height: 100vh;
+    background: #f0f4ff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-decoration {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    animation: float 10s ease-in-out infinite;
+  }
+
+  .blob-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #6366f1, #818cf8);
+    top: -150px; left: -100px;
+    animation-delay: 0s;
+  }
+
+  .blob-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #3b82f6, #60a5fa);
+    bottom: -100px; right: -80px;
+    animation-delay: -4s;
+  }
+
+  .blob-3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, #06b6d4, #67e8f9);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -7s;
+  }
+
+  .grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(99,102,241,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  .shop-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  .page-title {
+    text-shadow: 0 2px 20px rgba(99,102,241,0.15);
+  }
+</style>
 
 {% endblock %}

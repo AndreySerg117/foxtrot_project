@@ -79,8 +79,14 @@ def logout_view(request):
 
 @staff_member_required(login_url='/user/redirect/')
 def crud_users(request):
-    users = User.objects.all()
-    return render(request, 'crud_users.html', context={'users': users})
+    shop_id = request.GET.get('shop')
+    current_shop = None
+    if shop_id:
+        current_shop = get_object_or_404(Shop, pk=shop_id)
+        users = User.objects.filter(shop_id=shop_id)
+    else:
+        users = User.objects.all()
+    return render(request, 'crud_users.html', context={'users': users, 'current_shop': current_shop})
 
 
 @staff_member_required(login_url='/user/redirect/')
@@ -132,6 +138,46 @@ def user_delete(request, pk):
 
 def user_redirect(request):
     return render(request, 'user_redirect.html')
+
+
+@staff_member_required(login_url='/user/redirect/')
+def crud_shops(request):
+    shops = Shop.objects.all()
+    return render(request, 'crud_shops.html', context={'shops': shops})
+
+
+@staff_member_required(login_url='/user/redirect/')
+def shop_create(request):
+    if request.method == 'POST':
+        shop = Shop.objects.create(
+            title=request.POST.get('title'),
+            description=request.POST.get('description'),
+            poster=request.FILES.get('poster'),
+        )
+        return redirect('crud_shops')
+    return render(request, 'shop_create.html')
+
+
+@staff_member_required(login_url='/user/redirect/')
+def shop_edit(request, pk):
+    shop = get_object_or_404(Shop, pk=pk)
+    if request.method == 'POST':
+        shop.title = request.POST.get('title')
+        shop.description = request.POST.get('description')
+        if request.FILES.get('poster'):
+            shop.poster = request.FILES.get('poster')
+        shop.save()
+        return redirect('crud_shops')
+    return render(request, 'shop_edit.html', {'user_obj': shop})
+
+
+@staff_member_required(login_url='/user/redirect/')
+def shop_delete(request, pk):
+    shop = get_object_or_404(Shop, pk=pk)
+    if request.method == 'POST':
+        shop.delete()
+        return redirect('crud_shops')
+    return render(request, 'shop_delete.html', {'shop_obj': shop})
 
 
 class ShopDetailView(DetailView):
