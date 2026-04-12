@@ -4,6 +4,25 @@
 <div class="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 py-12 px-4">
   <div class="max-w-6xl mx-auto">
 
+     <form method="GET" action="{% url 'crud_shops' %}" class="relative hidden md:block">
+        <input
+          type="text"
+          name="q"
+          value="{{ request.GET.q }}"
+          class="w-72 pl-11 pr-4 py-2.5 rounded-full bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm"
+          placeholder="Пошук магазину..."
+        >
+
+        <svg class="w-5 h-5 absolute left-3 top-3 text-gray-400"
+             xmlns="http://www.w3.org/2000/svg"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="m21 21-4.3-4.3m1.3-5.2a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/>
+        </svg>
+      </form>
+
     <div class="flex justify-between items-center mb-3">
        <a href="{% url 'index' %}" class="inline-flex items-center text-gray-400 hover:text-gray transition-colors mb-1 group">
          <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,6 +44,7 @@
             <th class="px-4 py-3">Назва</th>
             <th class="px-4 py-3">Фото</th>
             <th class="px-4 py-3">Опис</th>
+            <th class="px-4 py-3">Дії</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-700/50">
