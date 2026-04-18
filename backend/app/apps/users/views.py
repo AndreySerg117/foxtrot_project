@@ -79,6 +79,7 @@ def logout_view(request):
 
 @staff_member_required(login_url='/user/redirect/')
 def crud_users(request):
+    query = request.GET.get('q', '')
     shop_id = request.GET.get('shop')
     current_shop = None
     if shop_id:
@@ -86,6 +87,13 @@ def crud_users(request):
         users = User.objects.filter(shop_id=shop_id)
     else:
         users = User.objects.all()
+    if query:
+        users = users.filter(
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query)
+        )
     return render(request, 'crud_users.html', context={'users': users, 'current_shop': current_shop})
 
 
@@ -142,7 +150,12 @@ def user_redirect(request):
 
 @staff_member_required(login_url='/user/redirect/')
 def crud_shops(request):
+    query = request.GET.get('q', '')
     shops = Shop.objects.all()
+    if query:
+        shops = shops.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
     return render(request, 'crud_shops.html', context={'shops': shops})
 
 

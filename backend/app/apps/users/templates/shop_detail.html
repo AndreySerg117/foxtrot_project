@@ -2,79 +2,111 @@
 
 {% block content %}
 
-<div class="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-   <div class="max-w-4xl mx-auto">
-      <a href="{% url 'index' %}" class="inline-flex items-center text-gray-400 hover:text-gray transition-colors mb-8 group">
-         <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-         </svg>
-         Назад до списку
-      </a>
-      <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-gray-700/50">
-         <div class="md:flex">
+<style>
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(20px, 15px) scale(1.06); }
+}
+</style>
 
-            <div class="md:w-1/3 p-6 flex justify-center items-start">
-               <div class="relative group">
-                  {% if shop.poster %}
-                     <img
-                        src="{{ shop.poster.url }}"
-                        alt="Обкладинка магазину {{ shop }}"
-                        class="w-64 h-64 aspect-square object-cover rounded-xl shadow-lg transform group-hover:scale-105 transition-transform duration-300"
-                     >
-                  {% else %}
-                     <div class="w-64 h-64 bg-gray-700 rounded-xl flex items-center justify-center">
-                        <svg class="w-20 h-20 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
-                        </svg>
-                     </div>
-                  {% endif %}
-                  <div class="absolute inset-0 bg-blue-500/20 rounded-xl blur-xl -z-10 group-hover:bg-blue-500/30 transition-colors"></div>
-               </div>
+<div class="min-h-screen py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+     style="background: linear-gradient(135deg, #e8eaf6 0%, #dde8f8 30%, #e4e8f8 60%, #ede8f5 100%);">
+
+  <div class="absolute rounded-full pointer-events-none"
+       style="width:500px;height:500px;background:#c7d2f5;top:-200px;left:-150px;filter:blur(80px);opacity:0.7;animation:drift 10s ease-in-out infinite alternate;"></div>
+  <div class="absolute rounded-full pointer-events-none"
+       style="width:400px;height:400px;background:#bfd4f5;bottom:-150px;right:-100px;filter:blur(80px);opacity:0.6;animation:drift 12s ease-in-out 4s infinite alternate;"></div>
+  <div class="absolute rounded-full pointer-events-none"
+       style="width:300px;height:300px;background:#d4c8f0;top:30%;left:60%;filter:blur(70px);opacity:0.5;animation:drift 8s ease-in-out 2s infinite alternate;"></div>
+
+  <div class="max-w-4xl mx-auto relative">
+
+    <a href="{% url 'index' %}"
+       class="inline-flex items-center mb-8 group transition-all"
+       style="color:#6b7280;font-size:15px;">
+      <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Назад до списку
+    </a>
+
+    <div class="rounded-2xl overflow-hidden mb-5"
+         style="background:#fff;box-shadow:0 4px 24px rgba(100,120,200,0.1);border:1px solid rgba(200,210,240,0.4);">
+
+      <div class="relative overflow-hidden" style="height:320px;">
+        {% if shop.poster %}
+          <img src="{{ shop.poster.url }}" alt="{{ shop }}"
+               style="width:100%;height:100%;object-fit:cover;display:block;">
+          <div class="absolute inset-0"
+               style="background:linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.5) 100%);"></div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center h-full"
+               style="background:linear-gradient(135deg,#e8eaf6,#dde8f8);">
+            <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-3"
+                 style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);">
+              <svg class="w-10 h-10" style="color:#a5b4fc;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+              </svg>
             </div>
+            <p style="color:#9ca3af;font-size:13px;">Немає постера</p>
+          </div>
+        {% endif %}
 
-            <div class="md:w-2/3 flex flex-col justify-between p-6">
-               <div>
-                  <div class="flex items-center mb-6">
-                     <span class="px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-sm font-medium border border-blue-500/30">
-                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                        </svg>
-                        Магазин: {{ shop }}
-                     </span>
-                  </div>
-
-                  {% if shop.description %}
-                     <div class="mb-6">
-                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Опис</h3>
-                        <p class="text-gray-300 leading-relaxed">{{ shop.description }}</p>
-                     </div>
-                  {% endif %}
-               </div>
-
-               <div class="bg-gray-900/30 px-6 py-4 border-t border-gray-700/50 mt-auto">
-                  <div class="flex flex-wrap gap-3 justify-between items-center">
-                     <div class="flex items-center text-gray-500 text-sm">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
-                        </svg>
-                        ID: {{ shop.pk }}
-                     </div>
-                     <div class="flex gap-3">
-                        <a href="{% url 'crud_users' %}?shop={{ shop.pk }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-lg transition-all">
-                           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                           </svg>
-                           До промоутерів у магазині
-                        </a>
-                     </div>
-                  </div>
-               </div>
-
-            </div>
-
-         </div>
+        <div class="absolute bottom-5 left-6">
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold"
+                style="background:rgba(255,255,255,0.92);color:#4f46e5;border:1px solid rgba(99,102,241,0.2);box-shadow:0 2px 12px rgba(0,0,0,0.1);backdrop-filter:blur(8px);">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            Магазин: {{ shop }}
+          </span>
+        </div>
       </div>
-   </div>
-</div>
+
+      {% if shop.description %}
+        <div class="px-8 py-6 border-b" style="border-color:#f1f5f9;">
+          <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color:#9ca3af;">Опис</p>
+          <p class="text-base leading-relaxed" style="color:#374151;">{{ shop.description }}</p>
+        </div>
+      {% endif %}
+
+      <div class="grid grid-cols-3 border-b" style="border-color:#f1f5f9;">
+        <div class="px-8 py-5 text-center border-r" style="border-color:#f1f5f9;">
+          <p class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af;">ID магазину</p>
+          <p class="text-2xl font-bold" style="color:#1e1b4b;">{{ shop.pk }}</p>
+        </div>
+        <div class="px-8 py-5 text-center border-r" style="border-color:#f1f5f9;">
+          <p class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af;">Статус</p>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                style="background:#dcfce7;color:#15803d;">
+            <span style="width:6px;height:6px;border-radius:50%;background:#16a34a;display:inline-block;"></span>
+            Активний
+          </span>
+        </div>
+        <div class="px-8 py-5 text-center">
+          <p class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af;">Платформа</p>
+          <p class="text-sm font-semibold" style="color:#374151;">ISAS</p>
+        </div>
+      </div>
+
+      <div class="px-8 py-5 flex flex-wrap gap-3 justify-between items-center"
+           style="background:#fafbff;">
+        <div class="flex items-center gap-2" style="color:#9ca3af;font-size:14px;">
+        </div>
+        <a href="{% url 'crud_users' %}?shop={{ shop.pk }}"
+           class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 hover:-translate-y-0.5"
+           style="background:linear-gradient(135deg,#4f46e5,#6366f1);box-shadow:0 4px 14px rgba(99,102,241,0.4);">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+          </svg>
+          До промоутерів у магазині
+        </a>
+      </div>
+
+    </div>
+
+    </div>
+
+  </div>
 
 {% endblock %}
