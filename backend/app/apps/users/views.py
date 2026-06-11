@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 
 
-@login_required(login_url='/users/login')
+@login_required(login_url='/users/login/')
 def index(request):
     shops = Shop.objects.prefetch_related("sellers").all()
     shop_filter = request.GET.get('shop', '').strip()
