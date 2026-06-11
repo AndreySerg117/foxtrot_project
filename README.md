@@ -8,7 +8,7 @@ git pull origin main
 # setup uv
 uv init backend
 cd .\backend\
-uv add django, uv add logtail python
+uv add django, uv add logtail-python
 uv run django-admin startproject app, uv run -m app.main
 
 # run project
