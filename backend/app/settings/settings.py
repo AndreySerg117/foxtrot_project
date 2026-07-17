@@ -1,5 +1,3 @@
-import os
-
 from decouple import config, Csv
 from pathlib import Path
 from settings.settings_storages import *
@@ -49,16 +47,14 @@ ROOT_URLCONF = 'core.urls'
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
 DATABASES = {
     'default': {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": config("PGDATABASE"),
         "USER": config("PGUSER"),
         "PASSWORD": config("PGPASSWORD"),
         "HOST": config("PGHOST"),
         "PORT": config("PGPORT", default=5432, cast=int),
-
         "CONN_MAX_AGE": 60,
     }
 }
