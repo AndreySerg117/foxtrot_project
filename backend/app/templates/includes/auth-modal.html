@@ -1,0 +1,138 @@
+<style>
+  .auth-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 96px 16px 24px;
+    background: rgb(15 23 42 / 0.45);
+    opacity: 0;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition: opacity 0.2s ease;
+  }
+
+  .auth-modal:target {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .auth-modal > div {
+    border-radius: 14px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+</style>
+
+<div
+  id="login"
+  class="auth-modal"
+>
+  <div class="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
+
+    <a href="#" class="absolute right-5 top-4 text-2xl text-gray-400 hover:text-gray-700">
+      &times;
+    </a>
+
+    <h2 class="mb-6 text-2xl font-bold text-gray-900">
+      Увійти
+    </h2>
+
+    <form method="post" action="{% url 'login' %}" class="space-y-4">
+      {% csrf_token %}
+
+      <div>
+        <label class="mb-2 block font-semibold">Username*</label>
+        <input
+          type="text"
+          name="username"
+          class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+
+      <div>
+        <label class="mb-2 block font-semibold">Password*</label>
+        <input
+          type="password"
+          name="password"
+          class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+
+      <button
+        type="submit"
+        class="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+      >
+        Увійти
+      </button>
+    </form>
+
+  </div>
+</div>
+
+<div
+  id="signup"
+  class="auth-modal"
+>
+  <div class="relative w-full max-w-xl rounded-2xl bg-white p-8 shadow-2xl">
+
+    <a href="#" class="absolute right-5 top-4 text-2xl text-gray-400 hover:text-gray-700">
+      &times;
+    </a>
+
+    <h2 class="mb-6 text-2xl font-bold text-gray-900">
+      Реєстрація
+    </h2>
+
+    <form method="post" action="{% url 'signup' %}" class="space-y-4">
+      {% csrf_token %}
+
+      <div>
+        <label class="mb-2 block font-semibold">Username*</label>
+        <input
+          type="text"
+          name="username"
+          class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+
+      <div>
+        <label class="mb-2 block font-semibold">Email address</label>
+        <input
+          type="email"
+          name="email"
+          class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+
+      <div>
+        <label class="mb-2 block font-semibold">Password*</label>
+        <input
+          type="password"
+          name="password1"
+          class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+
+      <div>
+        <label class="mb-2 block font-semibold">Password confirmation*</label>
+        <input
+          type="password"
+          name="password2"
+          class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+
+      <button
+        type="submit"
+        class="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+      >
+        Зареєструватись
+      </button>
+    </form>
+
+  </div>
+</div>

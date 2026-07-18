@@ -11,7 +11,6 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 
 
-@login_required(login_url='/users/login/')
 def index(request):
     shops = Shop.objects.prefetch_related("sellers").all()
     shop_filter = request.GET.get('shop', '').strip()
@@ -77,8 +76,10 @@ def logout_view(request):
     return redirect('index')
 
 
-@staff_member_required(login_url='/user/redirect/')
+@login_required(login_url='/users/login/')
 def crud_users(request):
+    if not request.user.is_staff:
+        return redirect("/user/redirect/")
     query = request.GET.get('q', '')
     shop_id = request.GET.get('shop')
     current_shop = None
@@ -148,8 +149,10 @@ def user_redirect(request):
     return render(request, 'user_redirect.html')
 
 
-@staff_member_required(login_url='/user/redirect/')
+@login_required(login_url='/users/login/')
 def crud_shops(request):
+    if not request.user.is_staff:
+        return redirect("/user/redirect/")
     query = request.GET.get('q', '')
     shops = Shop.objects.all()
     if query:
