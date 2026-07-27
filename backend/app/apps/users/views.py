@@ -34,6 +34,19 @@ def index(request):
     return render(request, "index.html", context={"shops": shops})
 
 
+def render_index_with_auth_modal(request, form, active_modal):
+    shops = Shop.objects.prefetch_related("sellers").all()
+    return render(
+        request,
+        "index.html",
+        context={
+            "shops": shops,
+            "auth_form": form,
+            "active_modal": active_modal,
+        },
+    )
+
+
 logger = logging.Logger(__name__)
 
 
@@ -50,6 +63,7 @@ def signup(request):
             login(request, user)
 
             return redirect('/')
+        return render_index_with_auth_modal(request, form, "signup")
 
     context = {"form": form, "form_title": "Sign up"}
     return render(request, 'signup.html', context)
@@ -67,6 +81,7 @@ def login_view(request):
             login(request, user)
 
             return redirect('index')
+        return render_index_with_auth_modal(request, form, "login")
     context = {"form": form, 'form_title': "Login"}
     return render(request, 'signup.html', context)
 

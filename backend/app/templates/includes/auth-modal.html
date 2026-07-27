@@ -15,7 +15,7 @@
     transition: opacity 0.2s ease;
   }
 
-  .auth-modal:target {
+  .auth-modal.is-active {
     opacity: 1;
     pointer-events: auto;
   }
@@ -29,11 +29,11 @@
 
 <div
   id="login"
-  class="auth-modal"
+  class="auth-modal {% if active_modal == 'login' %}is-active{% endif %}"
 >
   <div class="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
 
-    <a href="#" class="absolute right-5 top-4 text-2xl text-gray-400 hover:text-gray-700">
+    <a href="#" class="auth-modal-close absolute right-5 top-4 text-2xl text-gray-400 hover:text-gray-700">
       &times;
     </a>
 
@@ -44,11 +44,25 @@
     <form method="post" action="{% url 'login' %}" class="space-y-4">
       {% csrf_token %}
 
+      {% if active_modal == 'login' and auth_form.errors %}
+        <div class="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {% for error in auth_form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+          {% for field in auth_form %}
+            {% for error in field.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
       <div>
         <label class="mb-2 block font-semibold">Username*</label>
         <input
           type="text"
           name="username"
+          value="{% if active_modal == 'login' %}{{ auth_form.username.value|default:'' }}{% endif %}"
           class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
       </div>
@@ -75,11 +89,11 @@
 
 <div
   id="signup"
-  class="auth-modal"
+  class="auth-modal {% if active_modal == 'signup' %}is-active{% endif %}"
 >
   <div class="relative w-full max-w-xl rounded-2xl bg-white p-8 shadow-2xl">
 
-    <a href="#" class="absolute right-5 top-4 text-2xl text-gray-400 hover:text-gray-700">
+    <a href="#" class="auth-modal-close absolute right-5 top-4 text-2xl text-gray-400 hover:text-gray-700">
       &times;
     </a>
 
@@ -90,11 +104,25 @@
     <form method="post" action="{% url 'signup' %}" class="space-y-4">
       {% csrf_token %}
 
+      {% if active_modal == 'signup' and auth_form.errors %}
+        <div class="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {% for error in auth_form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+          {% for field in auth_form %}
+            {% for error in field.errors %}
+              <p>{{ field.label }}: {{ error }}</p>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
       <div>
         <label class="mb-2 block font-semibold">Username*</label>
         <input
           type="text"
           name="username"
+          value="{% if active_modal == 'signup' %}{{ auth_form.username.value|default:'' }}{% endif %}"
           class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
       </div>
@@ -104,6 +132,7 @@
         <input
           type="email"
           name="email"
+          value="{% if active_modal == 'signup' %}{{ auth_form.email.value|default:'' }}{% endif %}"
           class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
       </div>
@@ -136,3 +165,26 @@
 
   </div>
 </div>
+
+<script>
+  document.querySelectorAll(".auth-modal-close").forEach((closeButton) => {
+    closeButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      document.querySelectorAll(".auth-modal").forEach((modal) => {
+        modal.classList.remove("is-active");
+      });
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    });
+  });
+
+  document.querySelectorAll('a[href="#login"], a[href="#signup"]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      const targetId = link.getAttribute("href").slice(1); //
+      const modal = document.getElementById(targetId);
+      if (modal) {
+        modal.classList.add("is-active");
+      }
+    });
+  });
+</script>
