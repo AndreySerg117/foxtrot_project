@@ -51,6 +51,9 @@ logger = logging.Logger(__name__)
 
 
 def signup(request):
+    if request.method == "GET":
+        return redirect("index")
+
     logger.error(request.method)
     logger.error(request.user)
     logger.error(request.user.is_authenticated)
@@ -60,7 +63,7 @@ def signup(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
 
             return redirect('/')
         return render_index_with_auth_modal(request, form, "signup")
@@ -70,6 +73,8 @@ def signup(request):
 
 
 def login_view(request):
+    if request.method == "GET":
+        return redirect("index")
 
     form = CustomAuthenticationForm(request)
 
