@@ -84,11 +84,9 @@
           {% for error in auth_form.non_field_errors %}
             <p>{{ error }}</p>
           {% endfor %}
-          {% for field in auth_form %}
-            {% for error in field.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          {% endfor %}
+          {% if auth_form.username.errors or auth_form.password.errors %}
+          <p>Fill in all fields.</p>
+          {% endif %}
         </div>
       {% endif %}
 
@@ -292,12 +290,135 @@
       <path fill="#EA4335" d="M12 6.13c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.84 3.21 14.63 2.25 12 2.25a9.75 9.75 0 0 0-8.73 5.38l3.24 2.53C7.29 7.85 9.45 6.13 12 6.13Z" />
     </svg>
 
-    <span>Sign in with Google</span>
-  </button>
-</form>
+        <span>Sign in with Google</span>
+      </button>
+    </form>
 
   </div>
 </div>
+
+{% if active_modal == 'logout_view' %}
+<div class="auth-modal fixed inset-0 z-[100] flex items-start justify-center bg-slate-900/45 px-4 pt-24 backdrop-blur-sm">
+
+  <div class="w-full max-w-md rounded-[14px] bg-white p-8 shadow-xl">
+
+    <div class="mb-6 flex items-center justify-between">
+      <h2 class="text-2xl font-bold text-gray-800">
+        Выход из аккаунта
+      </h2>
+
+      <a
+        href="{% url 'index' %}"
+        class="text-2xl text-gray-400 transition hover:text-gray-700"
+      >
+        &times;
+      </a>
+    </div>
+
+    <p class="mb-8 text-gray-600">
+      Вы уверены, что хотите выйти из аккаунта?
+    </p>
+
+    <div class="flex justify-end gap-3">
+
+      <a
+        href="{% url 'index' %}"
+        class="rounded-lg border border-gray-300 px-5 py-2.5 font-medium text-gray-700 transition hover:bg-gray-100"
+      >
+        Отмена
+      </a>
+
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+
+        <button
+          type="submit"
+          class="rounded-lg bg-red-500 px-5 py-2.5 font-medium text-white transition hover:bg-red-600"
+        >
+          Выйти
+        </button>
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+{% endif %}
+
+{% if active_modal == 'verify_email' %}
+
+<div class="auth-modal is-active">
+
+  <div class="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+
+    <div class="mb-6 text-center">
+
+      <h2 class="text-2xl font-bold text-gray-900">
+        Verify your email address
+      </h2>
+
+      <p class="mt-2 text-sm leading-6 text-gray-500">
+        We have sent a confirmation code to your email address.
+      </p>
+
+      <p class="mt-1 text-sm font-medium text-gray-700">
+        {{ verification_email }}
+      </p>
+
+    </div>
+
+    <form method="post" action="{% url 'signup' %}">
+      {% csrf_token %}
+
+      <div class="mb-5">
+
+        <label
+          for="verification-code"
+          class="mb-2 block text-sm font-medium text-gray-700"
+        >
+          Confirmation code
+        </label>
+
+        <input
+          id="verification-code"
+          type="text"
+          name="code"
+          maxlength="6"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          placeholder="Введите 6-значный код"
+          class="block w-full rounded-xl border border-gray-300 px-4 py-3 text-center text-lg tracking-[0.35em] outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        >
+
+        {% if active_modal == 'verify_email' and auth_form.code.errors %}
+  <div class="mt-2 mb-2 rounded-xl border border-red-300 bg-red-50 px-6 py-3 text-sm text-red-700">
+    {% for error in auth_form.code.errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+
+      </div>
+
+      <button
+        type="submit"
+        class="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700"
+      >
+        Confirm email
+      </button>
+
+      <p class="mt-5 text-center text-sm text-gray-500">
+        The code is valid for 10 minutes.
+      </p>
+
+    </form>
+
+  </div>
+
+</div>
+
+{% endif %}
 
 <script>
   document.querySelectorAll(".auth-modal-close").forEach((closeButton) => {

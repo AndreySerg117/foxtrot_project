@@ -138,3 +138,6 @@ CSRF_COOKIE_SAMESITE = "Lax"
 
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "webmaster@localhost"
