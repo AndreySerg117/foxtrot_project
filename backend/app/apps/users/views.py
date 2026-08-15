@@ -11,7 +11,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from apps.users.utils import generate_verification_code
 from django.utils import timezone
 from datetime import timedelta
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 from django.conf import settings
 
@@ -114,10 +115,20 @@ def signup(request):
             },
         )
 
-            send_mail(subject="Confirm your email",
-                      message=f"Your verification code is {code} The code is valid for 10 minutes.",
-                      from_email=settings.DEFAULT_FROM_EMAIL,
-                      recipient_list=[user.email])
+            html_content = render_to_string(
+                "emails/verification_code.html",
+                {"code": code},
+            )
+
+            email = EmailMultiAlternatives(
+                subject="ISAS — Email Verification",
+                body=f"Your verification code is {code}. The code is valid for 10 minutes.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[user.email],
+            )
+
+            email.attach_alternative(html_content, "text/html")
+            email.send()
 
             request.session["verification_user_id"] = user.id
 
@@ -183,7 +194,8 @@ def login_view(request):
 
 
 def logout_view(request):
-    logout(request)
+    if request.method == "POST":
+        logout(request)
     return redirect('index')
 
 

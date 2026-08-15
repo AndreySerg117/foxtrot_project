@@ -297,54 +297,60 @@
   </div>
 </div>
 
-{% if active_modal == 'logout_view' %}
-<div class="auth-modal fixed inset-0 z-[100] flex items-start justify-center bg-slate-900/45 px-4 pt-24 backdrop-blur-sm">
+<div id="logout" class="auth-modal">
+  <div class="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
 
-  <div class="w-full max-w-md rounded-[14px] bg-white p-8 shadow-xl">
+    <a
+      href="#"
+      class="auth-modal-close absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full text-2xl text-gray-400 transition hover:text-gray-700"
+    >
+      &times;
+    </a>
 
-    <div class="mb-6 flex items-center justify-between">
-      <h2 class="text-2xl font-bold text-gray-800">
-        Выход из аккаунта
-      </h2>
-
-      <a
-        href="{% url 'index' %}"
-        class="text-2xl text-gray-400 transition hover:text-gray-700"
+    <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.8"
+        stroke="currentColor"
+        class="h-7 w-7 text-red-500"
       >
-        &times;
-      </a>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15"
+        />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M18 12H9m0 0l3-3m-3 3l3 3"
+        />
+      </svg>
     </div>
 
-    <p class="mb-8 text-gray-600">
-      Вы уверены, что хотите выйти из аккаунта?
+    <h2 class="mb-2 text-2xl font-bold text-gray-900">
+      Log out?
+    </h2>
+
+    <p class="mb-7 text-sm leading-6 text-gray-500">
+      Are you sure you want to log out of your account?
+      You can always sign in again later.
     </p>
 
-    <div class="flex justify-end gap-3">
+    <form method="post" action="{% url 'logout' %}" class="flex justify-center">
+      {% csrf_token %}
 
-      <a
-        href="{% url 'index' %}"
-        class="rounded-lg border border-gray-300 px-5 py-2.5 font-medium text-gray-700 transition hover:bg-gray-100"
+      <button
+        type="submit"
+        class="w-full rounded-xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-600 active:scale-[0.98]"
       >
-        Отмена
-      </a>
-
-      <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-
-        <button
-          type="submit"
-          class="rounded-lg bg-red-500 px-5 py-2.5 font-medium text-white transition hover:bg-red-600"
-        >
-          Выйти
-        </button>
-      </form>
-
-    </div>
+        Log out
+      </button>
+    </form>
 
   </div>
-
 </div>
-{% endif %}
 
 {% if active_modal == 'verify_email' %}
 
@@ -445,7 +451,7 @@
     });
   });
 
-  document.querySelectorAll('a[href="#login"], a[href="#signup"]').forEach((link) => {
+  document.querySelectorAll('a[href="#login"], a[href="#signup"], a[href="#logout"]').forEach((link) => {
     link.addEventListener("click", (event) => {
       event.preventDefault();
       const targetId = link.getAttribute("href").slice(1); //
