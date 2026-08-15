@@ -1,6 +1,42 @@
 @import "tailwindcss";
 
+@source "../../templates";
+@source "../../**/*.html";
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
+
+@layer components {
+  .auth-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgb(0 0 0 / 0.4);
+    opacity: 0;
+    pointer-events: none;
+    backdrop-filter: blur(6px);
+    transition: opacity 0.2s ease;
+  }
+
+  .auth-modal:target {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .comfy-btn {
+    transition: all 0.2s ease;
+  }
+
+  .comfy-btn:hover {
+    background-color: #15803d;
+    transform: scale(1.05);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  }
+}

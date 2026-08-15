@@ -1,17 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from apps.users.forms import CustomUserCreationForm, CustomAuthenticationForm
-from django.contrib.auth import login, logout
+from apps.users.forms import CustomUserCreationForm, CustomAuthenticationForm, EmailVerificationForm
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from apps.users.models import User, Shop
+from apps.users.models import User, Shop, EmailVerificationCode
 import logging
-from django.views.generic import DetailView
 from django.db.models import Q, prefetch_related_objects
 from django.views.generic import DetailView
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from apps.users.utils import generate_verification_code
+from django.utils import timezone
+from datetime import timedelta
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
+
+from django.conf import settings
 
 
-@login_required(login_url='/users/login/')
 def index(request):
     shops = Shop.objects.prefetch_related("sellers").all()
     shop_filter = request.GET.get('shop', '').strip()
@@ -35,50 +40,169 @@ def index(request):
     return render(request, "index.html", context={"shops": shops})
 
 
+def render_index_with_auth_modal(request, form, active_modal, email=None):
+    shops = Shop.objects.prefetch_related("sellers").all()
+    return render(
+        request,
+        "index.html",
+        context={
+            "shops": shops,
+            "auth_form": form,
+            "active_modal": active_modal,
+            "verification_email": email,
+        },
+    )
+
+
 logger = logging.Logger(__name__)
 
 
 def signup(request):
+    if request.method == "GET":
+        return redirect("index")
+
     logger.error(request.method)
     logger.error(request.user)
     logger.error(request.user.is_authenticated)
     form = CustomUserCreationForm()
 
     if request.method == "POST":
+
+        if "code" in request.POST:
+            form = EmailVerificationForm(request.POST)
+
+            user_id = request.session.get("verification_user_id")
+            if not user_id:
+                return redirect("index")
+
+            user = get_object_or_404(User, id=user_id)
+            verification = get_object_or_404(EmailVerificationCode, user=user)
+
+            if not form.is_valid():
+                return render_index_with_auth_modal(request, form, "verify_email", user.email)
+
+            entered_code = form.cleaned_data["code"]
+
+            if verification.expires_at < timezone.now():
+                form.add_error("code", "The verification code has expired.")
+                return render_index_with_auth_modal(request, form, "verify_email", user.email)
+
+            if entered_code != verification.code:
+                form.add_error("code", "Invalid verification code.")
+                return render_index_with_auth_modal(request, form, "verify_email", user.email)
+
+            user.is_active = True
+            user.save()
+
+            verification.delete()
+            request.session.pop("verification_user_id", None)
+
+            login(request, user, "django.contrib.auth.backends.ModelBackend")
+
+            return redirect("index")
+
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+            code = generate_verification_code()
+            verification = EmailVerificationCode.objects.update_or_create(
+                user=user,
+                defaults={
+                "code": code,
+                "expires_at": timezone.now() + timedelta(minutes=10),
+            },
+        )
 
-            return redirect('/')
+            html_content = render_to_string(
+                "emails/verification_code.html",
+                {"code": code},
+            )
 
-    context = {"form": form, "form_title": "Sign up"}
-    return render(request, 'signup.html', context)
+            email = EmailMultiAlternatives(
+                subject="ISAS — Email Verification",
+                body=f"Your verification code is {code}. The code is valid for 10 minutes.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[user.email],
+            )
+
+            email.attach_alternative(html_content, "text/html")
+            email.send()
+
+            request.session["verification_user_id"] = user.id
+
+            return render_index_with_auth_modal(
+                request,
+                form,
+                "verify_email",
+                user.email,
+            )
+
+        context = {"form": form, "form_title": "Sign up"}
+        return render_index_with_auth_modal(request, form, "signup")
 
 
 def login_view(request):
+    if request.method == "GET":
+        return redirect("index")
 
     form = CustomAuthenticationForm(request)
 
     if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        inactive_user = User.objects.filter(username=username, is_active=False).first()
+
+        if inactive_user and inactive_user.check_password(password):
+            code = generate_verification_code()
+
+            EmailVerificationCode.objects.update_or_create(
+                user=inactive_user,
+                defaults={
+                    "code": code,
+                    "expires_at": timezone.now() + timedelta(minutes=10),
+                },
+            )
+
+            send_mail(
+                subject="Confirm your email",
+                message=f"Your verification code is {code}. The code is valid for 10 minutes.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[inactive_user.email],
+            )
+
+            request.session["verification_user_id"] = inactive_user.id
+
+            return render_index_with_auth_modal(
+                request,
+                EmailVerificationForm(),
+                "verify_email",
+                inactive_user.email,
+            )
+
         form = CustomAuthenticationForm(request, data=request.POST)
 
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            return redirect("index")
 
-            return redirect('index')
+        return render_index_with_auth_modal(request, form, "login")
     context = {"form": form, 'form_title': "Login"}
     return render(request, 'signup.html', context)
 
 
 def logout_view(request):
-    logout(request)
+    if request.method == "POST":
+        logout(request)
     return redirect('index')
 
 
-@staff_member_required(login_url='/user/redirect/')
+@login_required(login_url='/users/login/')
 def crud_users(request):
+    if not request.user.is_staff:
+        return redirect("/user/redirect/")
     query = request.GET.get('q', '')
     shop_id = request.GET.get('shop')
     current_shop = None
@@ -148,8 +272,10 @@ def user_redirect(request):
     return render(request, 'user_redirect.html')
 
 
-@staff_member_required(login_url='/user/redirect/')
+@login_required(login_url='/users/login/')
 def crud_shops(request):
+    if not request.user.is_staff:
+        return redirect("/user/redirect/")
     query = request.GET.get('q', '')
     shops = Shop.objects.all()
     if query:
