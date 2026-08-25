@@ -165,12 +165,20 @@ def login_view(request):
                 },
             )
 
-            send_mail(
-                subject="Confirm your email",
-                message=f"Your verification code is {code}. The code is valid for 10 minutes.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[inactive_user.email],
+            html_content = render_to_string(
+                "emails/verification_code.html",
+                {"code": code},
             )
+
+            email = EmailMultiAlternatives(
+                subject="ISAS — Email Verification",
+                body=f"Your verification code is {code}. The code is valid for 10 minutes.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[inactive_user.email],
+            )
+
+            email.attach_alternative(html_content, "text/html")
+            email.send()
 
             request.session["verification_user_id"] = inactive_user.id
 
