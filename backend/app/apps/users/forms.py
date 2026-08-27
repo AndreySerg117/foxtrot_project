@@ -43,9 +43,9 @@ class CustomAuthenticationForm(AuthenticationForm):
 class EmailVerificationForm(forms.Form):
     code = forms.CharField(min_length=6, max_length=6,
         error_messages={
-        "required": "Enter the confirmation code.",
-    }
-)
+            "required": "Empty your verification code.",
+        }
+    )
 
     def clean_code(self):
         code = self.cleaned_data["code"]

@@ -16,6 +16,8 @@ from django.template.loader import render_to_string
 
 from django.conf import settings
 
+from apps.users.utils import send_verification_code_email
+
 
 def index(request):
     shops = Shop.objects.prefetch_related("sellers").all()
@@ -88,7 +90,16 @@ def signup(request):
                 return render_index_with_auth_modal(request, form, "verify_email", user.email)
 
             if entered_code != verification.code:
-                form.add_error("code", "Invalid verification code.")
+                verification.attempts += 1
+
+                if verification.attempts >= 5:
+                    verification.expires_at = timezone.now()
+                    verification.save(update_fields=["attempts", "expires_at"])
+                    form.add_error("code", "Too many attempts. Please request a new code.")
+                    return render_index_with_auth_modal(request, form, "verify_email", user.email)
+
+                verification.save(update_fields=["attempts"])
+                form.add_error("code", "Enter the correct confirmation code.")
                 return render_index_with_auth_modal(request, form, "verify_email", user.email)
 
             user.is_active = True
@@ -107,28 +118,17 @@ def signup(request):
             user.is_active = False
             user.save()
             code = generate_verification_code()
-            verification = EmailVerificationCode.objects.update_or_create(
+            EmailVerificationCode.objects.update_or_create(
                 user=user,
                 defaults={
-                "code": code,
-                "expires_at": timezone.now() + timedelta(minutes=10),
-            },
-        )
-
-            html_content = render_to_string(
-                "emails/verification_code.html",
-                {"code": code},
+                    "code": code,
+                    "expires_at": timezone.now() + timedelta(minutes=10),
+                    "attempts": 0,
+                    "last_sent_at": timezone.now(),
+                },
             )
 
-            email = EmailMultiAlternatives(
-                subject="ISAS — Email Verification",
-                body=f"Your verification code is {code}. The code is valid for 10 minutes.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[user.email],
-            )
-
-            email.attach_alternative(html_content, "text/html")
-            email.send()
+            send_verification_code_email(user, code)
 
             request.session["verification_user_id"] = user.id
 
@@ -162,6 +162,8 @@ def login_view(request):
                 defaults={
                     "code": code,
                     "expires_at": timezone.now() + timedelta(minutes=10),
+                    "attempts": 0,
+                    "last_sent_at": timezone.now(),
                 },
             )
 
@@ -335,3 +337,45 @@ class ShopDetailView(DetailView):
     def get_queryset(self):
         return super().get_queryset().prefetch_related("sellers")
 
+
+def resend_verification_code(request):
+    if request.method != "POST":
+        return redirect("index")
+
+    user_id = request.session.get("verification_user_id")
+    if not user_id:
+        return redirect("index")
+
+    user = get_object_or_404(User, id=user_id)
+    verification = get_object_or_404(EmailVerificationCode, user=user)
+
+    cooldown_seconds = 60
+    time_since_last_send = timezone.now() - verification.last_sent_at
+
+    if time_since_last_send.total_seconds() < cooldown_seconds:
+        form = EmailVerificationForm(request.POST)
+        form.is_valid()
+
+        form.add_error(
+            "code",
+            "Please wait before requesting a new code.",
+        )
+        return render_index_with_auth_modal(request, form, "verify_email", user.email)
+
+    code = generate_verification_code()
+
+    verification.code = code
+    verification.attempts = 0
+    verification.last_sent_at = timezone.now()
+    verification.expires_at = timezone.now() + timedelta(minutes=10)
+    verification.save(
+        update_fields=["code", "attempts", "last_sent_at", "expires_at"]
+    )
+
+    send_verification_code_email(user, code)
+    form = EmailVerificationForm(request.POST)
+    form.is_valid()
+
+    form.add_error("code", "A new verification code has been sent.")
+
+    return render_index_with_auth_modal(request, form, "verify_email", user.email)
