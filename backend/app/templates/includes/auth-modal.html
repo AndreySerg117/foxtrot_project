@@ -24,6 +24,11 @@
     border-radius: 14px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .auth-modal > div::-webkit-scrollbar {
+    display: none;
   }
 
   .password-field {
@@ -166,7 +171,9 @@
   id="signup"
   class="auth-modal {% if active_modal == 'signup' %}is-active{% endif %}"
 >
-  <div class="relative w-full max-w-xl rounded-2xl bg-white p-8 shadow-2xl">
+  <div class="relative w-full max-w-xl rounded-2xl bg-white p-8 shadow-2xl"
+       style="top: -30px;"
+  >
 
     <a href="#" class="auth-modal-close absolute right-6 top-7 text-2xl text-gray-400 hover:text-gray-700">
       &times;
@@ -181,14 +188,27 @@
 
       {% if active_modal == 'signup' and auth_form.errors %}
         <div class="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {% for error in auth_form.non_field_errors %}
-            <p>{{ error }}</p>
-          {% endfor %}
-          {% for field in auth_form %}
-            {% for error in field.errors %}
-              <p>{{ field.label }}: {{ error }}</p>
-            {% endfor %}
-          {% endfor %}
+
+          {% if not auth_form.username.value or not auth_form.email.value or not auth_form.password1.value or not auth_form.password2.value %}
+            <p>Fill in all fields.</p>
+
+          {% elif auth_form.non_field_errors %}
+            <p>{{ auth_form.non_field_errors.0 }}</p>
+
+          {% elif auth_form.username.errors %}
+            <p>{{ auth_form.username.errors.0 }}</p>
+
+          {% elif auth_form.email.errors %}
+            <p>{{ auth_form.email.errors.0 }}</p>
+
+          {% elif auth_form.password1.errors %}
+            <p>{{ auth_form.password1.errors.0 }}</p>
+
+          {% elif auth_form.password2.errors %}
+            <p>{{ auth_form.password2.errors.0 }}</p>
+
+          {% endif %}
+
         </div>
       {% endif %}
 
@@ -298,7 +318,9 @@
 </div>
 
 <div id="logout" class="auth-modal">
-  <div class="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+  <div class="relative top-8 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl"
+       style="top: 64px;"
+  >
 
     <a
       href="#"
@@ -356,7 +378,9 @@
 
 <div class="auth-modal is-active">
 
-  <div class="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+  <div class="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl"
+       style="top: 64px;"
+  >
 
     <div class="mb-6 text-center">
 
@@ -399,11 +423,15 @@
 
         {% if active_modal == 'verify_email' and auth_form.code.errors %}
   <div class="mt-2 mb-2 rounded-xl border border-red-300 bg-red-50 px-6 py-3 text-sm text-red-700">
-    {% for error in auth_form.code.errors %}
-      <p>{{ error }}</p>
-    {% endfor %}
+    {{ auth_form.code.errors.0 }}
   </div>
 {% endif %}
+
+        {% if active_modal == 'verify_email' and auth_success_message %}
+          <div class="mt-2 mb-2 rounded-xl border border-green-300 bg-green-50 px-6 py-3 text-sm text-green-700">
+            {{ auth_success_message }}
+          </div>
+        {% endif %}
 
       </div>
 
@@ -413,15 +441,24 @@
       >
         Confirm email
       </button>
-
-      <p class="mt-5 text-center text-sm text-gray-500">
-        The code is valid for 10 minutes.
-      </p>
-
     </form>
 
-  </div>
+    <div class="mt-5 flex items-center justify-center gap-2 text-sm text-gray-500">
+      <span>The code is valid for 10 minutes.</span>
 
+      <form method="post" action="{% url 'resend_verification_code' %}">
+        {% csrf_token %}
+
+        <button
+          type="submit"
+          class="font-semibold text-blue-600 transition hover:text-blue-700 hover:underline"
+        >
+          Resend code
+        </button>
+      </form>
+    </div>
+
+  </div>
 </div>
 
 {% endif %}
