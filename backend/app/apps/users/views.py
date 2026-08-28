@@ -42,7 +42,7 @@ def index(request):
     return render(request, "index.html", context={"shops": shops})
 
 
-def render_index_with_auth_modal(request, form, active_modal, email=None):
+def render_index_with_auth_modal(request, form, active_modal, email=None, success_message=None):
     shops = Shop.objects.prefetch_related("sellers").all()
     return render(
         request,
@@ -52,6 +52,7 @@ def render_index_with_auth_modal(request, form, active_modal, email=None):
             "auth_form": form,
             "active_modal": active_modal,
             "verification_email": email,
+            "auth_success_message": success_message,
         },
     )
 
@@ -353,7 +354,7 @@ def resend_verification_code(request):
     time_since_last_send = timezone.now() - verification.last_sent_at
 
     if time_since_last_send.total_seconds() < cooldown_seconds:
-        form = EmailVerificationForm(request.POST)
+        form = EmailVerificationForm(data={"code": "000000"})
         form.is_valid()
 
         form.add_error(
@@ -373,9 +374,11 @@ def resend_verification_code(request):
     )
 
     send_verification_code_email(user, code)
-    form = EmailVerificationForm(request.POST)
-    form.is_valid()
 
-    form.add_error("code", "A new verification code has been sent.")
-
-    return render_index_with_auth_modal(request, form, "verify_email", user.email)
+    return render_index_with_auth_modal(
+        request,
+        EmailVerificationForm(),
+        "verify_email",
+        user.email,
+        success_message="A new verification code has been sent.",
+    )

@@ -24,6 +24,11 @@
     border-radius: 14px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .auth-modal > div::-webkit-scrollbar {
+    display: none;
   }
 
   .password-field {
@@ -418,11 +423,15 @@
 
         {% if active_modal == 'verify_email' and auth_form.code.errors %}
   <div class="mt-2 mb-2 rounded-xl border border-red-300 bg-red-50 px-6 py-3 text-sm text-red-700">
-    {% for error in auth_form.code.errors %}
-      <p>{{ error }}</p>
-    {% endfor %}
+    {{ auth_form.code.errors.0 }}
   </div>
 {% endif %}
+
+        {% if active_modal == 'verify_email' and auth_success_message %}
+          <div class="mt-2 mb-2 rounded-xl border border-green-300 bg-green-50 px-6 py-3 text-sm text-green-700">
+            {{ auth_success_message }}
+          </div>
+        {% endif %}
 
       </div>
 
@@ -432,26 +441,24 @@
       >
         Confirm email
       </button>
-
-      <p class="mt-5 text-center text-sm text-gray-500">
-        The code is valid for 10 minutes.
-      </p>
-
     </form>
 
-    <form method="post" action="{% url 'resend_verification_code' %}" class="mt-4">
-      {% csrf_token %}
+    <div class="mt-5 flex items-center justify-center gap-2 text-sm text-gray-500">
+      <span>The code is valid for 10 minutes.</span>
 
-  <button
-    type="submit"
-    class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
-  >
-    Resend code
-  </button>
-    </form>
+      <form method="post" action="{% url 'resend_verification_code' %}">
+        {% csrf_token %}
+
+        <button
+          type="submit"
+          class="font-semibold text-blue-600 transition hover:text-blue-700 hover:underline"
+        >
+          Resend code
+        </button>
+      </form>
+    </div>
 
   </div>
-
 </div>
 
 {% endif %}
