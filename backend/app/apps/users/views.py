@@ -13,6 +13,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.db.models import Avg
+from apps.users.forms import ReviewForm
 
 from django.conf import settings
 
@@ -337,6 +339,44 @@ class ShopDetailView(DetailView):
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related("sellers")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        reviews = self.object.reviews.select_related("user").order_by("-created_at")
+        average_rating = reviews.aggregate(Avg("rating"))["rating__avg"]
+        reviews_count = reviews.count()
+
+        user_review = None
+        if self.request.user.is_authenticated:
+            user_review = reviews.filter(user=self.request.user).first()
+
+        context["reviews"] = reviews
+        context["average_rating"] = average_rating
+        context["reviews_count"] = reviews_count
+        context["review_form"] = ReviewForm()
+        context["user_review"] = user_review
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not request.user.is_authenticated:
+            return redirect("index")
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.shop = self.object
+            review.user = request.user
+            review.save()
+
+            return redirect("shop_detail", pk=self.object.pk)
+
+        context = self.get_context_data()
+        context["review_form"] = form
+        return self.render_to_response(context)
+
+
 
 
 def resend_verification_code(request):
