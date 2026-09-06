@@ -29,6 +29,12 @@
     </a>
   </div>
 
+    <div class="max-w-5xl mx-auto relative z-10">
+
+  <div class="mb-5">
+    Back to the list
+  </div>
+
     <div class="rounded-[28px] overflow-hidden mb-5"
          style="border-radius:28px;background:rgba(255,255,255,0.92);box-shadow:0 24px 70px rgba(15,23,42,0.12);border:1px solid rgba(255,255,255,0.72);backdrop-filter:blur(14px);">
 
@@ -75,20 +81,21 @@
 
       <div class="grid grid-cols-3 gap-4 px-8 py-6">
         <div class="rounded-2xl px-6 py-5 text-center" style="background:#f8fafc;border:1px solid #eef2f7;">
-          <p class="text-xs uppercase mb-2" style="color:#94a3b8;letter-spacing:0.08em;">ID магазину</p>
-          <p class="text-3xl font-bold" style="color:#0f172a;">{{ shop.pk }}</p>
+          <p class="text-xs uppercase mb-2" style="color:#94a3b8;letter-spacing:0.08em;">Графік роботи</p>
+          <p class="text-3xl font-bold" style="color:#0f172a;">{{ shop.opening_hours|default:"Hours not specified" }}</p>
         </div>
         <div class="rounded-2xl px-6 py-5 text-center" style="background:#f8fafc;border:1px solid #eef2f7;">
-          <p class="text-xs uppercase mb-3" style="color:#94a3b8;letter-spacing:0.08em;">Статус</p>
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-                style="background:#dcfce7;color:#15803d;">
-            <span style="width:6px;height:6px;border-radius:50%;background:#16a34a;display:inline-block;"></span>
-            Активний
-          </span>
+          <p class="text-xs uppercase mb-3" style="color:#94a3b8;letter-spacing:0.08em;">Рейтинг</p>
+          <p class="text-xs uppercase mb-3" style="color:#94a3b8;letter-spacing:0.08em;">
+            {% if average_rating %}
+              {{ average_rating|floatformat:1 }} / 5
+            {% else %}
+              No ratings yet
+            {% endif %}</p>
         </div>
         <div class="rounded-2xl px-6 py-5 text-center" style="background:#f8fafc;border:1px solid #eef2f7;">
-          <p class="text-xs uppercase mb-2" style="color:#94a3b8;letter-spacing:0.08em;">Платформа</p>
-          <p class="text-lg font-bold" style="color:#334155;">ISAS</p>
+          <p class="text-xs uppercase mb-2" style="color:#94a3b8;letter-spacing:0.08em;">Відгуки</p>
+          <p class="text-lg font-bold" style="color:#334155;">{{ reviews_count }}</p>
         </div>
       </div>
 
@@ -109,6 +116,80 @@
       {% endif %}
 
     </div>
+
+    <div class="rounded-[28px] bg-white px-8 py-6 shadow-sm">
+    <h3 class="mb-5 text-2xl font-bold text-gray-900">
+      Customer reviews
+    </h3>
+
+    {% for review in reviews %}
+      <div class="border-b border-gray-100 py-4">
+        <p class="font-semibold text-gray-900">
+          {{ review.user.username }}
+        </p>
+
+        <p class="text-sm font-semibold text-yellow-500">
+          {{ review.rating }} / 5
+        </p>
+
+        <p class="mt-2 text-gray-700">
+          {{ review.comment }}
+        </p>
+
+        <p class="mt-2 text-xs text-gray-400">
+          {{ review.created_at }}
+        </p>
+      </div>
+    {% empty %}
+      <p class="text-gray-500">
+        No reviews yet.
+      </p>
+    {% endfor %}
+  </div>
+
+  <div class="mt-6 rounded-[28px] bg-white px-8 py-6 shadow-sm"
+       style="border-radius:28px;border:1px solid rgba(226,232,240,0.9);">
+    <h3 class="mb-5 text-2xl font-bold text-gray-900">
+      Leave a review
+    </h3>
+
+    {% if user.is_authenticated %}
+      {% if user_review %}
+        <p class="rounded-2xl bg-blue-50 px-5 py-4 text-sm font-medium text-blue-700">
+          You have already reviewed this shop.
+        </p>
+      {% else %}
+        <form method="post" class="space-y-4">
+          {% csrf_token %}
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">
+              Rating
+            </label>
+            {{ review_form.rating }}
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">
+              Comment
+            </label>
+            {{ review_form.comment }}
+          </div>
+
+          <button type="submit"
+                  class="rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:shadow-md">
+            Add review
+          </button>
+        </form>
+      {% endif %}
+    {% else %}
+      <p class="rounded-2xl bg-gray-50 px-5 py-4 text-sm font-medium text-gray-600">
+        Please log in to leave a review.
+      </p>
+    {% endif %}
+  </div>
+
+</div>
 
     </div>
 

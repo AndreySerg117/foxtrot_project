@@ -2,6 +2,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
 from django import forms
 from django.core.exceptions import ValidationError
+from apps.users.models import Review
 
 User = get_user_model()
 
@@ -58,6 +59,31 @@ class EmailVerificationForm(forms.Form):
 
     def __str__(self):
         return self.code
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ("rating", "comment")
+        widgets = {
+            "comment": forms.Textarea(attrs={
+                "rows": 4,
+                "placeholder": "Share your experience with this shop...",
+                "class": "w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500",
+            }),
+            "rating": forms.Select(
+                choices=[
+                    (1, "1 star"),
+                    (2, "2 stars"),
+                    (3, "3 stars"),
+                    (4, "4 stars"),
+                    (5, "5 stars"),
+                ],
+                attrs={
+                    "class": "w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500",
+                },
+            )
+        }
 
 
 
