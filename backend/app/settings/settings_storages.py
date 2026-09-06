@@ -15,7 +15,6 @@ STORAGES = {
         "OPTIONS": CLOUDFLARE_R2_CONFIG_OPTIONS,
     },
     "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": CLOUDFLARE_R2_CONFIG_OPTIONS,
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }

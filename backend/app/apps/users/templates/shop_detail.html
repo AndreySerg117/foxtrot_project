@@ -2,95 +2,99 @@
 
 {% block content %}
 
-<style>
-@keyframes drift {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(20px, 15px) scale(1.06); }
-}
-</style>
+<div class="shop-detail-page min-h-screen py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
 
-<div class="min-h-screen py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
-     style="background: linear-gradient(135deg, #e8eaf6 0%, #dde8f8 30%, #e4e8f8 60%, #ede8f5 100%);">
+  <div class="detail-bg-decoration">
+    <div class="detail-surface-glow detail-surface-glow-left"></div>
+    <div class="detail-surface-glow detail-surface-glow-right"></div>
+    <div class="detail-grid-overlay"></div>
+    <div class="detail-accent-lines"></div>
+  </div>
 
-  <div class="absolute rounded-full pointer-events-none"
-       style="width:500px;height:500px;background:#c7d2f5;top:-200px;left:-150px;filter:blur(80px);opacity:0.7;animation:drift 10s ease-in-out infinite alternate;"></div>
-  <div class="absolute rounded-full pointer-events-none"
-       style="width:400px;height:400px;background:#bfd4f5;bottom:-150px;right:-100px;filter:blur(80px);opacity:0.6;animation:drift 12s ease-in-out 4s infinite alternate;"></div>
-  <div class="absolute rounded-full pointer-events-none"
-       style="width:300px;height:300px;background:#d4c8f0;top:30%;left:60%;filter:blur(70px);opacity:0.5;animation:drift 8s ease-in-out 2s infinite alternate;"></div>
+  <div class="max-w-4xl mx-auto relative z-10">
 
-  <div class="max-w-4xl mx-auto relative">
-
+   <div class="mb-5">
     <a href="{% url 'index' %}"
-       class="inline-flex items-center mb-8 group transition-all"
-       style="color:#6b7280;font-size:15px;">
-      <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+       class="inline-flex items-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-gray-600 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:text-blue-600 hover:shadow-md">
+      <svg class="mr-2 h-5 w-5"
+           fill="none"
+           stroke="currentColor"
+           viewBox="0 0 24 24">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"/>
       </svg>
-      Назад до списку
+      Back to the list
     </a>
+  </div>
 
-    <div class="rounded-2xl overflow-hidden mb-5"
-         style="background:#fff;box-shadow:0 4px 24px rgba(100,120,200,0.1);border:1px solid rgba(200,210,240,0.4);">
+    <div class="rounded-[28px] overflow-hidden mb-5"
+         style="border-radius:28px;background:rgba(255,255,255,0.92);box-shadow:0 24px 70px rgba(15,23,42,0.12);border:1px solid rgba(255,255,255,0.72);backdrop-filter:blur(14px);">
 
-      <div class="relative overflow-hidden" style="height:320px;">
+      <div class="relative overflow-hidden" style="height:380px;">
         {% if shop.poster %}
           <img src="{{ shop.poster.url }}" alt="{{ shop }}"
                style="width:100%;height:100%;object-fit:cover;display:block;">
           <div class="absolute inset-0"
-               style="background:linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.5) 100%);"></div>
+               style="background:linear-gradient(to bottom, rgba(15,23,42,0.05) 25%, rgba(15,23,42,0.72) 100%);"></div>
         {% else %}
           <div class="flex flex-col items-center justify-center h-full"
-               style="background:linear-gradient(135deg,#e8eaf6,#dde8f8);">
-            <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-3"
+               style="background:linear-gradient(135deg,#eef5ff,#dbeafe);">
+            <div class="w-24 h-24 rounded-3xl flex items-center justify-center mb-4"
                  style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);">
-              <svg class="w-10 h-10" style="color:#a5b4fc;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-12 h-12" style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
               </svg>
             </div>
-            <p style="color:#9ca3af;font-size:13px;">Немає постера</p>
+            <p style="color:#64748b;font-size:14px;font-weight:600;">Немає постера</p>
           </div>
         {% endif %}
 
-        <div class="absolute bottom-5 left-6">
-          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold"
-                style="background:rgba(255,255,255,0.92);color:#4f46e5;border:1px solid rgba(99,102,241,0.2);box-shadow:0 2px 12px rgba(0,0,0,0.1);backdrop-filter:blur(8px);">
+        <div class="absolute bottom-8 left-8 right-8">
+          <span class="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold"
+                style="background:rgba(255,255,255,0.9);color:#2563eb;border:1px solid rgba(255,255,255,0.7);box-shadow:0 8px 24px rgba(15,23,42,0.16);backdrop-filter:blur(10px);">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
             </svg>
-            Магазин: {{ shop }}
+            Store profile
           </span>
+
+          <h2 class="text-4xl font-bold text-white" style="text-shadow:0 10px 28px rgba(15,23,42,0.36);">
+            {{ shop }}
+          </h2>
         </div>
       </div>
 
       {% if shop.description %}
-        <div class="px-8 py-6 border-b" style="border-color:#f1f5f9;">
-          <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color:#9ca3af;">Опис</p>
-          <p class="text-base leading-relaxed" style="color:#374151;">{{ shop.description }}</p>
+        <div class="px-8 pt-3 pb-7" style="border-bottom:1px solid #eef2f7;">
+          <p class="text-xs font-bold uppercase mb-2" style="color:#94a3b8;letter-spacing:0.08em;">Опис</p>
+          <p class="text-base leading-relaxed" style="color:#334155;">{{ shop.description }}</p>
         </div>
       {% endif %}
 
-      <div class="grid grid-cols-3 border-b" style="border-color:#f1f5f9;">
-        <div class="px-8 py-5 text-center border-r" style="border-color:#f1f5f9;">
-          <p class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af;">ID магазину</p>
-          <p class="text-2xl font-bold" style="color:#1e1b4b;">{{ shop.pk }}</p>
+      <div class="grid grid-cols-3 gap-4 px-8 py-6">
+        <div class="rounded-2xl px-6 py-5 text-center" style="background:#f8fafc;border:1px solid #eef2f7;">
+          <p class="text-xs uppercase mb-2" style="color:#94a3b8;letter-spacing:0.08em;">ID магазину</p>
+          <p class="text-3xl font-bold" style="color:#0f172a;">{{ shop.pk }}</p>
         </div>
-        <div class="px-8 py-5 text-center border-r" style="border-color:#f1f5f9;">
-          <p class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af;">Статус</p>
+        <div class="rounded-2xl px-6 py-5 text-center" style="background:#f8fafc;border:1px solid #eef2f7;">
+          <p class="text-xs uppercase mb-3" style="color:#94a3b8;letter-spacing:0.08em;">Статус</p>
           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
                 style="background:#dcfce7;color:#15803d;">
             <span style="width:6px;height:6px;border-radius:50%;background:#16a34a;display:inline-block;"></span>
             Активний
           </span>
         </div>
-        <div class="px-8 py-5 text-center">
-          <p class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af;">Платформа</p>
-          <p class="text-sm font-semibold" style="color:#374151;">ISAS</p>
+        <div class="rounded-2xl px-6 py-5 text-center" style="background:#f8fafc;border:1px solid #eef2f7;">
+          <p class="text-xs uppercase mb-2" style="color:#94a3b8;letter-spacing:0.08em;">Платформа</p>
+          <p class="text-lg font-bold" style="color:#334155;">ISAS</p>
         </div>
       </div>
 
-      <div class="px-8 py-5 flex flex-wrap gap-3 justify-between items-center"
-           style="background:#fafbff;">
+      {% if request.user.is_staff %}
+      <div class="px-8 py-6 flex flex-wrap gap-3 justify-between items-center"
+           style="background:linear-gradient(180deg,#ffffff,#f8fbff);border-top:1px solid #eef2f7;">
         <div class="flex items-center gap-2" style="color:#9ca3af;font-size:14px;">
         </div>
         <a href="{% url 'crud_users' %}?shop={{ shop.pk }}"
@@ -102,11 +106,77 @@
           До промоутерів у магазині
         </a>
       </div>
+      {% endif %}
 
     </div>
 
     </div>
 
   </div>
+
+<style>
+  .shop-detail-page {
+    background:
+      linear-gradient(135deg, #f8fbff 0%, #eef5ff 42%, #f7f7ff 70%, #f9fbff 100%);
+  }
+
+  .shop-detail-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(37, 99, 235, 0.08), transparent 34%),
+      linear-gradient(300deg, rgba(14, 165, 233, 0.10), transparent 38%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.38));
+    z-index: 0;
+  }
+
+  .detail-bg-decoration {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .detail-surface-glow {
+    position: absolute;
+    width: 55vw;
+    height: 100vh;
+    opacity: 0.72;
+    filter: blur(18px);
+  }
+
+  .detail-surface-glow-left {
+    left: -18vw;
+    top: -8vh;
+    background: linear-gradient(120deg, rgba(37, 99, 235, 0.14), rgba(14, 165, 233, 0.06), transparent 70%);
+  }
+
+  .detail-surface-glow-right {
+    right: -20vw;
+    bottom: -10vh;
+    background: linear-gradient(300deg, rgba(99, 102, 241, 0.13), rgba(6, 182, 212, 0.07), transparent 70%);
+  }
+
+  .detail-grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(37, 99, 235, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37, 99, 235, 0.055) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.16));
+  }
+
+  .detail-accent-lines {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(115deg, transparent 0 18%, rgba(37, 99, 235, 0.08) 18.2%, transparent 18.8% 100%),
+      linear-gradient(115deg, transparent 0 72%, rgba(14, 165, 233, 0.09) 72.2%, transparent 72.8% 100%);
+    opacity: 0.65;
+  }
+</style>
 
 {% endblock %}

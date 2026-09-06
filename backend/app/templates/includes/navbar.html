@@ -5,15 +5,17 @@ bg-white border-b border-gray-200 shadow-sm">
 
   <div class="max-w-7xl mx-auto px-6 py-3 flex items-center gap-6">
 
-    <a href="{% url 'index' %}" class="flex items-center gap-3 group">
-      <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition">
-        I
-      </div>
 
-      <span class="text-xl font-bold text-gray-800 tracking-wide group-hover:text-blue-600 transition">
-        ISAS
-      </span>
-    </a>
+      {% load static %}
+
+      <nav>
+      <a href="{% url 'index' %}" class="flex items-center gap-3">
+          <img src="{% static 'images/logo.png' %}"
+               alt="ISAS logo"
+               class="h-10 w-10 rounded-xl object-cover">
+          <span class="text-xl font-bold text-gray-900">ISAS</span>
+      </a>
+      </nav>
 
 
     <div class="flex items-center justify-center gap-6 flex-wrap max-w-[500px] mx-auto">
@@ -71,10 +73,11 @@ bg-white border-b border-gray-200 shadow-sm">
           name="q"
           value="{{ request.GET.q }}"
           class="w-75 pl-11 pr-4 py-2.5 rounded-full bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm"
-          placeholder="Пошук магазину..."
+          placeholder="Searching for a store..."
         >
 
-        <svg class="w-5 h-5 absolute left-5 top-3 text-gray-400"
+        <svg class="w-5 h-5 absolute top-3 text-gray-400"
+             style="left: 16px;"
              xmlns="http://www.w3.org/2000/svg"
              fill="none"
              viewBox="0 0 24 24"
@@ -93,12 +96,12 @@ bg-white border-b border-gray-200 shadow-sm">
       {% else %}
         <a href="#login"
            class="text-gray-700 hover:text-blue-600 text-sm font-medium transition">
-          Увійти
+          Log in
         </a>
 
         <a href="#signup"
            class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-full font-semibold transition shadow-md hover:shadow-lg hover:scale-105">
-          Реєстрація
+          Registration
         </a>
       {% endif %}
 
