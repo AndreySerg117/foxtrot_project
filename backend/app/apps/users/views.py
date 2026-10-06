@@ -1,8 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from apps.users.forms import CustomUserCreationForm, CustomAuthenticationForm, EmailVerificationForm
-from django.contrib.auth import login, logout, authenticate
+from apps.users.forms import (
+    CustomAuthenticationForm,
+    CustomUserCreationForm,
+    EmailVerificationForm,
+    ReviewForm,
+)
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from apps.users.models import User, Shop, EmailVerificationCode
+from apps.users.models import User, Shop, EmailVerificationCode, Review
 import logging
 from django.db.models import Q, prefetch_related_objects
 from django.views.generic import DetailView
@@ -11,10 +16,10 @@ from django.contrib.admin.views.decorators import staff_member_required
 from apps.users.utils import generate_verification_code
 from django.utils import timezone
 from datetime import timedelta
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.db.models import Avg
-from apps.users.forms import ReviewForm
+
 
 from django.conf import settings
 
@@ -368,6 +373,8 @@ class ShopDetailView(DetailView):
             review = form.save(commit=False)
             review.shop = self.object
             review.user = request.user
+            if Review.objects.filter(shop=self.object, user=request.user).exists():
+                return redirect("shop_detail", pk=self.object.pk)
             review.save()
 
             return redirect("shop_detail", pk=self.object.pk)
@@ -377,6 +384,31 @@ class ShopDetailView(DetailView):
         return self.render_to_response(context)
 
 
+@login_required(login_url="/users/login/")
+def review_edit(request, pk):
+    review = get_object_or_404(Review, pk=pk, user=request.user)
+
+    if request.method == "POST":
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            return redirect("shop_detail", pk=review.shop.pk)
+    else:
+        form = ReviewForm(instance=review)
+
+    return render(request, "review_form.html", {"form": form, "review": review})
+
+
+@login_required(login_url="/users/login/")
+def review_delete(request, pk):
+    review = get_object_or_404(Review, pk=pk, user=request.user)
+    shop_pk = review.shop.pk
+
+    if request.method == "POST":
+        review.delete()
+        return redirect("shop_detail", pk=shop_pk)
+
+    return render(request, "review_confirm_delete.html", {"review": review})
 
 
 def resend_verification_code(request):
