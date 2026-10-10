@@ -3,7 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from apps.users.views import (signup, login_view, logout_view, index, ShopDetailView, crud_users,
                               user_create, user_edit, user_delete, user_redirect, crud_shops, shop_create,
-                              shop_edit, shop_delete, resend_verification_code)
+                              shop_edit, shop_delete, resend_verification_code, review_edit, review_delete,)
 
 urlpatterns = [
     path("", index, name='index'),
@@ -12,6 +12,8 @@ urlpatterns = [
     path('users/login/', login_view, name='login'),
     path('users/logout/', logout_view, name='logout'),
     path("shop/<int:pk>/", ShopDetailView.as_view(), name='shop_detail'),
+    path("reviews/<int:pk>/edit/", review_edit, name="review_edit"),
+    path("reviews/<int:pk>/delete/", review_delete, name="review_delete"),
     path('users/', crud_users, name='crud_users'),
     path('user/create', user_create, name='user_create'),
     path('user/edit/<int:pk>/', user_edit, name='user_edit'),
