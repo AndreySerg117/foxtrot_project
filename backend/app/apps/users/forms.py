@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
 from django import forms
 from django.core.exceptions import ValidationError
-from apps.users.models import Review
+from apps.users.models import Review, ReviewReply
 
 User = get_user_model()
 
@@ -83,6 +83,27 @@ class ReviewForm(forms.ModelForm):
                     "class": "w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500",
                 },
             )
+        }
+
+
+class ReviewReplyForm(forms.ModelForm):
+    class Meta:
+        model = ReviewReply
+        fields = ("text",)
+        widgets = {
+            "text": forms.Textarea(attrs={
+                "rows": 3,
+                "placeholder": "Write your reply...",
+                "max_length": 2000,
+            }),
+        }
+        labels = {
+            "text": "Your reply",
+        }
+        error_messages = {
+            "text": {
+                "required": "Reply text cannot be empty.",
+            },
         }
 
 

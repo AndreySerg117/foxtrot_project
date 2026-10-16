@@ -66,3 +66,41 @@ class Review(models.Model):
                 name="unique_review_per_user_shop",
             )
         ]
+
+
+class ReviewReply(models.Model):
+    reviews = models.ForeignKey(
+        "Review",
+        on_delete=models.CASCADE,
+        related_name="replies"
+    )
+    user = models.ForeignKey(
+        "User",
+        on_delete=models.CASCADE,
+        related_name="review_replies"
+    )
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class ReviewLike(models.Model):
+    review = models.ForeignKey(
+        "Review",
+        on_delete=models.CASCADE,
+        related_name="likes"
+    )
+    user = models.ForeignKey(
+        "User",
+        on_delete=models.CASCADE,
+        related_name="review_likes"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Meta:
+    constraints = [
+        models.UniqueConstraint(
+            fields=["review", "user"],
+            name="unique_like_per_user_review",
+        )
+    ]

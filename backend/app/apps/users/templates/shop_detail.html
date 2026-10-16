@@ -278,7 +278,50 @@
               </div>
             </div>
           </div>
+
         {% endif %}
+
+        <div class="review-replies mt-5">
+          {% for reply in review.replies.all %}
+            <div class="reply-card">
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <strong class="text-sm font-bold text-slate-900">
+                    {{ reply.user.get_full_name|default:reply.user.username }}
+                  </strong>
+                </div>
+                <p class="mt-1 text-sm leading-6 text-slate-700">
+                  {{ reply.text }}
+                </p>
+              </div>
+            </div>
+          {% empty %}
+            <p class="reply-empty">
+              No replies yet.
+            </p>
+          {% endfor %}
+
+          {% if request.user.is_authenticated %}
+            <form method="post" action="{% url 'review_reply_create' pk=review.pk %}" class="reply-form">
+              {% csrf_token %}
+              <textarea name="text" placeholder="Write your reply..." rows="2"></textarea>
+              <button type="submit">Reply</button>
+            </form>
+          {% endif %}
+        </div>
+
+        <div class="mt-5 flex flex-wrap items-center gap-3">
+          <form method="post" action="{% url 'review_like_toggle' pk=review.pk %}"
+          class="like-form">
+            {% csrf_token %}
+            <button type="submit" class="review-like-button">
+              <span class="review-like-icon">♥</span>
+              <span>Like</span>
+              <span class="review-like-count">{{ review.likes.count }}</span>
+            </button>
+          </form>
+        </div>
+
       </div>
       {% empty %}
       <p class="text-gray-500">
@@ -356,6 +399,156 @@
       linear-gradient(115deg, transparent 0 18%, rgba(37, 99, 235, 0.08) 18.2%, transparent 18.8% 100%),
       linear-gradient(115deg, transparent 0 72%, rgba(14, 165, 233, 0.09) 72.2%, transparent 72.8% 100%);
     opacity: 0.65;
+  }
+
+  .review-like-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(219, 234, 254, 0.95);
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    padding: 9px 14px;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .review-like-button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(37, 99, 235, 0.35);
+    background: #eff6ff;
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.14);
+  }
+
+  .review-like-icon {
+    color: #ef4444;
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .review-like-count {
+    display: inline-flex;
+    min-width: 26px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .review-replies {
+    margin-left: 18px;
+    border-left: 2px solid #dbeafe;
+    padding-left: 18px;
+  }
+
+  .reply-card {
+    display: flex;
+    gap: 12px;
+    border-radius: 18px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    background: rgba(248, 250, 252, 0.86);
+    padding: 14px;
+  }
+
+  .reply-card + .reply-card,
+  .reply-empty + .reply-form,
+  .reply-card + .reply-form {
+    margin-top: 12px;
+  }
+
+  .reply-avatar {
+    display: flex;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+    color: white;
+    font-size: 13px;
+    font-weight: 900;
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+  }
+
+  .reply-empty {
+    border-radius: 18px;
+    background: #f8fafc;
+    padding: 12px 14px;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .reply-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  .reply-form textarea {
+    min-height: 46px;
+    flex: 1;
+    resize: vertical;
+    border-radius: 18px;
+    border: 1px solid #dbe4ef;
+    background: #ffffff;
+    padding: 12px 14px;
+    color: #0f172a;
+    font-size: 14px;
+    outline: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .reply-form textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+  }
+
+  .reply-form button {
+    min-height: 46px;
+    border-radius: 999px;
+    background: #2563eb;
+    padding: 0 20px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.20);
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .reply-form button:hover {
+    transform: translateY(-1px);
+    background: #1d4ed8;
+    box-shadow: 0 16px 30px rgba(37, 99, 235, 0.28);
+  }
+
+  @media (max-width: 640px) {
+    .review-replies {
+      margin-left: 0;
+      padding-left: 12px;
+    }
+
+    .reply-form {
+      flex-direction: column;
+      align-items: stretch;
+    }
   }
 
   .review-modal {

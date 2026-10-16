@@ -4,10 +4,11 @@ from apps.users.forms import (
     CustomUserCreationForm,
     EmailVerificationForm,
     ReviewForm,
+    ReviewReplyForm
 )
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from apps.users.models import User, Shop, EmailVerificationCode, Review
+from apps.users.models import User, Shop, EmailVerificationCode, Review, ReviewLike
 import logging
 from django.db.models import Q, prefetch_related_objects
 from django.views.generic import DetailView
@@ -454,3 +455,33 @@ def resend_verification_code(request):
         user.email,
         success_message="A new verification code has been sent.",
     )
+
+
+@login_required
+def review_reply_create(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+
+    if request.method == "POST":
+        form = ReviewReplyForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.reviews = review
+            reply.user = request.user
+            reply.save()
+
+    return redirect("shop_detail", pk=review.shop.pk)
+
+
+@login_required
+def review_like_toggle(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+
+    like, created = ReviewLike.objects.get_or_create(
+        review=review,
+        user=request.user,
+    )
+
+    if not created:
+        like.delete()
+
+    return redirect("shop_detail", pk=review.shop.pk)
