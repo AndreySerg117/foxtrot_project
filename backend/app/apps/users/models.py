@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import AbstractUser
 
 
@@ -25,6 +25,7 @@ class Shop(models.Model):
     title = models.CharField(max_length=256)
     poster = models.ImageField(upload_to="shops/", blank=False, null=True)
     description = models.TextField(blank=False, null=True)
+    opening_hours = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return f"{self.title}"
@@ -40,3 +41,66 @@ class EmailVerificationCode(models.Model):
     expires_at = models.DateTimeField()
     attempts = models.PositiveSmallIntegerField(default=0)
     last_sent_at = models.DateTimeField(default=timezone.now)
+
+
+class Review(models.Model):
+    shop = models.ForeignKey(
+        "Shop",
+        on_delete=models.CASCADE,
+        related_name="reviews"
+    )
+    user = models.ForeignKey(
+        "User",
+        on_delete=models.CASCADE
+    )
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["shop", "user"],
+                name="unique_review_per_user_shop",
+            )
+        ]
+
+
+class ReviewReply(models.Model):
+    reviews = models.ForeignKey(
+        "Review",
+        on_delete=models.CASCADE,
+        related_name="replies"
+    )
+    user = models.ForeignKey(
+        "User",
+        on_delete=models.CASCADE,
+        related_name="review_replies"
+    )
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class ReviewLike(models.Model):
+    review = models.ForeignKey(
+        "Review",
+        on_delete=models.CASCADE,
+        related_name="likes"
+    )
+    user = models.ForeignKey(
+        "User",
+        on_delete=models.CASCADE,
+        related_name="review_likes"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Meta:
+    constraints = [
+        models.UniqueConstraint(
+            fields=["review", "user"],
+            name="unique_like_per_user_review",
+        )
+    ]

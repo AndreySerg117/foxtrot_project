@@ -70,6 +70,7 @@
 <div
   id="login"
   class="auth-modal {% if active_modal == 'login' %}is-active{% endif %}"
+  data-require-login="{% if not request.user.is_authenticated %}true{% else %}false{% endif %}"
 >
   <div class="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
 
@@ -498,4 +499,19 @@
       }
     });
   });
+
+  document.querySelectorAll(".like-form").forEach((form) => {
+  form.addEventListener("submit", (event) => {
+    const loginModal = document.getElementById("login");
+
+    if (
+      loginModal &&
+      loginModal.dataset.requireLogin === "true"
+    ) {
+      event.preventDefault();
+      loginModal.classList.add("is-active");
+    }
+  });
+});
+
 </script>
