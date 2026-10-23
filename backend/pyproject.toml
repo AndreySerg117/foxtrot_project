@@ -12,6 +12,7 @@ dependencies = [
     "django-crispy-forms>=2.6",
     "django-debug-toolbar>=6.2.0",
     "django-storages[s3]>=1.14.6",
+    "gunicorn>=26.2.0",
     "pillow>=12.1.1",
     "psycopg[binary]>=3.3.3",
     "pyjwt>=2.13.0",
