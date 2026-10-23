@@ -31,6 +31,7 @@ services:
       - static_data:/app/staticfiles
     depends_on:
       - db
+      - redis
     networks:
       - main_network
     env_file:
@@ -49,6 +50,31 @@ services:
     networks:
       - main_network
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis_foxtrot
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - main_network
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: worker_foxtrot
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: celery -A core worker -l INFO
+    depends_on:
+      - redis
+      - db
+    networks:
+      - main_network
+
 networks:
   main_network:
     driver: bridge
@@ -56,3 +82,4 @@ networks:
 volumes:
   postgres_data:
   static_data:
+  redis_data:

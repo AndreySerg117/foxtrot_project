@@ -20,7 +20,9 @@ from datetime import timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.db.models import Avg
+from django.db import transaction
 
+from apps.users.tasks import send_verification_email
 
 from django.conf import settings
 
@@ -137,7 +139,9 @@ def signup(request):
                 },
             )
 
-            send_verification_code_email(user, code)
+            transaction.on_commit(
+                lambda: send_verification_email.delay(user.id, code)
+            )
 
             request.session["verification_user_id"] = user.id
 
