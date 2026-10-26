@@ -170,30 +170,9 @@ def login_view(request):
         if inactive_user and inactive_user.check_password(password):
             code = generate_verification_code()
 
-            EmailVerificationCode.objects.update_or_create(
-                user=inactive_user,
-                defaults={
-                    "code": code,
-                    "expires_at": timezone.now() + timedelta(minutes=10),
-                    "attempts": 0,
-                    "last_sent_at": timezone.now(),
-                },
+            transaction.on_commit(
+                lambda: send_verification_email.delay(inactive_user.id, code)
             )
-
-            html_content = render_to_string(
-                "emails/verification_code.html",
-                {"code": code},
-            )
-
-            email = EmailMultiAlternatives(
-                subject="ISAS — Email Verification",
-                body=f"Your verification code is {code}. The code is valid for 10 minutes.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[inactive_user.email],
-            )
-
-            email.attach_alternative(html_content, "text/html")
-            email.send()
 
             request.session["verification_user_id"] = inactive_user.id
 
@@ -450,7 +429,9 @@ def resend_verification_code(request):
         update_fields=["code", "attempts", "last_sent_at", "expires_at"]
     )
 
-    send_verification_code_email(user, code)
+    transaction.on_commit(
+        lambda: send_verification_email.delay(user.id, code)
+    )
 
     return render_index_with_auth_modal(
         request,
