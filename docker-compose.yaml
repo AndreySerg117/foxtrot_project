@@ -22,23 +22,27 @@ services:
       context: ./backend
     restart: unless-stopped
     command:
-      - sh
-      - -c
-      - >
-        python manage.py migrate --noinput &&
-        python manage.py collectstatic --noinput &&
-        exec gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60
+      - gunicorn
+      - core.wsgi:application
+      - --bind
+      - 0.0.0.0:8000
+      - --workers
+      - "3"
+      - --timeout
+      - "60"
     volumes:
       - static_data:/app/staticfiles
     depends_on:
-      - db
-      - redis
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
     networks:
       - main_network
     env_file:
       - .env
     healthcheck:
-      test: [ "CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=3)\"" ]
+      test: [ "CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/', timeout=3)\"" ]
       interval: 20s
       timeout: 5s
       retries: 5
@@ -56,7 +60,7 @@ services:
     networks:
       - main_network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -71,7 +75,7 @@ services:
     networks:
       - main_network
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -86,9 +90,33 @@ services:
       - .env
     command: celery -A core worker -l INFO
     depends_on:
+      migrate:
+        condition: service_completed_successfully
       db:
         condition: service_healthy
       redis:
+        condition: service_healthy
+    networks:
+      - main_network
+
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: migrate_foxtrot
+    restart: "no"
+    env_file:
+      - .env
+    command:
+      - sh
+      - -c
+      - >
+        python manage.py migrate --noinput &&
+        python manage.py collectstatic --noinput
+    volumes:
+      - static_data:/app/staticfiles
+    depends_on:
+      db:
         condition: service_healthy
     networks:
       - main_network

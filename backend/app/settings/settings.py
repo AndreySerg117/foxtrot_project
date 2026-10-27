@@ -10,6 +10,11 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", cast=bool, default=False)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
 AUTH_USER_MODEL = "users.User"
 
 LOGIN_URL = '/users/login/'

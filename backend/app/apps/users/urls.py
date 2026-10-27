@@ -1,13 +1,20 @@
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
 from apps.users.views import (signup, login_view, logout_view, index, ShopDetailView, crud_users,
                               user_create, user_edit, user_delete, user_redirect, crud_shops, shop_create,
                               shop_edit, shop_delete, resend_verification_code, review_edit, review_delete,
                               review_reply_create, review_like_toggle)
 
+
+def healthcheck(request):
+    return JsonResponse({"status": "ok"})
+
+
 urlpatterns = [
     path("", index, name='index'),
+    path("health/", healthcheck),
     path("users/signup/", signup, name='signup'),
     path("users/resend-verification-code/", resend_verification_code, name="resend_verification_code"),
     path('users/login/', login_view, name='login'),
