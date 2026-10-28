@@ -52,9 +52,9 @@ services:
     container_name: foxtrot_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: foxtrot_db
-      POSTGRES_USER: foxtrot_user
-      POSTGRES_PASSWORD: foxtrot_password
+      POSTGRES_DB: ${PGDATABASE}
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
