@@ -52,9 +52,9 @@ services:
     container_name: foxtrot_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${PGDATABASE}
-      POSTGRES_USER: ${PGUSER}
-      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${LOCAL_POSTGRES_DB}
+      POSTGRES_USER: ${LOCAL_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${LOCAL_POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -89,6 +89,25 @@ services:
     env_file:
       - .env
     command: celery -A core worker -l INFO
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - main_network
+
+  beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: beat_foxtrot
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: celery -A core beat -l INFO
     depends_on:
       migrate:
         condition: service_completed_successfully

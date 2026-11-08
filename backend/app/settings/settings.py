@@ -3,6 +3,7 @@ from pathlib import Path
 from settings.settings_storages import *
 from settings.settings_static_templates import *
 from decouple import config
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -177,3 +178,12 @@ CELERY_RESULT_BACKEND = config(
 )
 
 CELERY_TASK_DEFAULT_QUEUE = "default"
+
+CELERY_TIMEZONE = TIME_ZONE
+
+CELERY_BEAT_SCHEDULE = {
+    "clear-expired-sessions-every-night": {
+        "task": "apps.users.tasks.clear_expired_sessions",
+        "schedule": crontab(hour=3, minute=0),
+    },
+}

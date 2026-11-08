@@ -170,3 +170,7 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 node_modules/
+
+# PostgreSQL backups
+*.tar.gz
+backups/
