@@ -1,0 +1,61 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Django tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      SECRET_KEY: ci-test-secret-key
+      DEBUG: "False"
+      ALLOWED_HOSTS: localhost
+      GOOGLE_CLIENT_ID: test-client-id
+      GOOGLE_CLIENT_SECRET: test-client-secret
+      EMAIL_HOST: localhost
+      EMAIL_PORT: "1025"
+      EMAIL_USE_TLS: "False"
+      EMAIL_HOST_USER: test@example.com
+      EMAIL_HOST_PASSWORD: test-password
+      DEFAULT_FROM_EMAIL: test@example.com
+      PGHOST: localhost
+      PGDATABASE: test_db
+      PGUSER: test_user
+      PGPASSWORD: test_password
+      CLOUDFLARE_R2_BUCKET: test-bucket
+      CLOUDFLARE_R2_ACCESS_KEY: test-key
+      CLOUDFLARE_R2_SECRET_KEY: test-secret
+      CLOUDFLARE_R2_BUCKET_ENDPOINT: https://example.com
+
+    steps:
+      - name: Get project code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Run Django tests
+        run: uv run pytest
