@@ -59,3 +59,25 @@ jobs:
 
       - name: Run Django tests
         run: uv run pytest
+
+  docker-compose:
+    name: Docker Compose validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get project code
+        uses: actions/checkout@v4
+
+      - name: Create CI environment file
+        run: |
+          cat > .env << 'EOF'
+          SECRET_KEY=ci-test-secret-key
+          DEBUG=False
+          ALLOWED_HOSTS=localhost
+          LOCAL_POSTGRES_DB=foxtrot_ci
+          LOCAL_POSTGRES_USER=foxtrot_ci_user
+          LOCAL_POSTGRES_PASSWORD=ci-password
+          EOF
+
+      - name: Validate Docker Compose configuration
+        run: docker compose config --quiet
