@@ -1,8 +1,7 @@
 from decouple import config, Csv
 from pathlib import Path
-from settings.settings_storages import *
-from settings.settings_static_templates import *
-from decouple import config
+from settings.settings_storages import *  # noqa: F403
+from settings.settings_static_templates import *  # noqa: F403
 from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent

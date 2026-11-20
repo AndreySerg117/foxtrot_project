@@ -1,6 +1,5 @@
 import pytest
 from django.contrib.auth import get_user_model
-from apps.users.models import Shop
 
 
 @pytest.fixture
