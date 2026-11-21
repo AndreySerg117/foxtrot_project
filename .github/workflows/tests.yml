@@ -60,6 +60,9 @@ jobs:
       - name: Run Django tests
         run: uv run pytest
 
+      - name: Run Ruff linter
+        run: uv run ruff check app
+
   docker-compose:
     name: Docker Compose validation
     runs-on: ubuntu-latest

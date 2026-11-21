@@ -17,16 +17,12 @@ from django.contrib.admin.views.decorators import staff_member_required
 from apps.users.utils import generate_verification_code
 from django.utils import timezone
 from datetime import timedelta
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from django.db.models import Avg
 from django.db import transaction
 
 from apps.users.tasks import send_verification_email
 
-from django.conf import settings
 
-from apps.users.utils import send_verification_code_email
 
 
 def index(request):
@@ -152,7 +148,6 @@ def signup(request):
                 user.email,
             )
 
-        context = {"form": form, "form_title": "Sign up"}
         return render_index_with_auth_modal(request, form, "signup")
 
 
@@ -290,7 +285,7 @@ def crud_shops(request):
 @staff_member_required(login_url='/user/redirect/')
 def shop_create(request):
     if request.method == 'POST':
-        shop = Shop.objects.create(
+        Shop.objects.create(
             title=request.POST.get('title'),
             description=request.POST.get('description'),
             poster=request.FILES.get('poster'),
